@@ -8,12 +8,30 @@ import { User as UserType } from '../../../common/types';
 
 @Table
 export class User extends Model {
-    @Column
-    firstName: string;
 
-    @Column
-    lastName: string;
+    // pseudoname for guest or chosen username
+    username: string;
 
-    @Column({ defaultValue: true })
-    isActive: boolean;
+    firstName?: string;
+
+    lastName?: string;
+
+    deleted: boolean;
+
+    isInactive?: boolean;
+
+    // email for user
+    email?: string;
+
+    // password if set up
+    password?: string;
+    
+    instance: UserType | undefined;
+
+
+    constructor() {
+        super();
+
+        this.instance = this.toJSON() as UserType;
+    }
 }

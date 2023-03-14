@@ -6,6 +6,10 @@ export type User = {
     // pseudoname for guest or chosen username
     username: string;
 
+    firstName?: string;
+
+    lastName?: string;
+
     deleted: boolean;
 
     isInactive?: boolean;

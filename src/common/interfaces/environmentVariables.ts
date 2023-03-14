@@ -1,7 +1,7 @@
 import { BooleanString, Environments } from '../enums';
 
 export default interface EnvironmentVariables {
-  NODE_ENV?: Environments | string;
+  NODE_ENV?: string;
   ENABLE_ALL_ORIGINS?: BooleanString | string;
   PORT?: number;
   MYSQL_ENABLED?: BooleanString | string;

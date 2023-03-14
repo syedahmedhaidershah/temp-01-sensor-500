@@ -36,6 +36,9 @@ async function bootstrap() {
     .create<NestFastifyApplication>(
       AppModule,
       new FastifyAdapter(),
+      {
+        logger: ['error','debug','verbose']
+      }
     );
 
   if (ENABLE_ALL_ORIGINS)

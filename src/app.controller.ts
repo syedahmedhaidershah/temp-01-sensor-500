@@ -1,10 +1,10 @@
 /** Core depndencies */
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+
 
 /** Local dependencies and libraries */
 import { AppService } from './app.service';
 
-import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
 
 @Controller()
 export class AppController {
@@ -13,11 +13,5 @@ export class AppController {
   @Get()
   getHello(): string {
     return this.appService.getHello();
-  }
-
-  @Get('auth')
-  @UseGuards(JwtAuthGuard)
-  getHelloAuth(): string {
-    return this.appService.getHelloAuth();
   }
 }

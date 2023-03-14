@@ -1,11 +1,8 @@
-/** Core dependencies */
 import { Module } from '@nestjs/common';
-
-/** Local dependencies */
-import { UsersService } from '../../providers/users/users.service';
+import { UsersService } from './users.service';
 
 @Module({
   providers: [UsersService],
-  exports: [UsersService],
+  exports: [UsersService]
 })
 export class UsersModule {}
