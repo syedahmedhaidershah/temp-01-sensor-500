@@ -1,10 +1,8 @@
 /** Core depndencies */
 import { Controller, Get } from '@nestjs/common';
 
-
 /** Local dependencies and libraries */
 import { AppService } from './app.service';
-
 
 @Controller()
 export class AppController {
