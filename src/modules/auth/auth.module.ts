@@ -24,6 +24,7 @@ import { AuthController } from './auth.controller';
 import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
 import { UsersModule } from '../users/users.module';
 import { LocalStrategy } from './local.strategy';
+import { RouterModule } from '@nestjs/core';
 
 
 

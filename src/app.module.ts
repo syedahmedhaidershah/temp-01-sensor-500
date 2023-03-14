@@ -20,6 +20,7 @@ import { MorganLoggerMiddleware } from './common/middlewares/morgan-logger/morga
 
 /** Local constants and statis */
 import EnvironmentVariables from './common/interfaces/environmentVariables';
+import { AuthController } from './modules/auth/auth.controller';
 
 
 
@@ -36,6 +37,7 @@ const {
 @Module({
   imports: [
     /** Feature modules */
+
 
     RouterModule
       .register(
@@ -56,7 +58,7 @@ const {
     AuthModule,
   ],
   controllers: [
-    // AppController
+    AppController,
   ],
   providers: [
     AppService,
