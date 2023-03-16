@@ -26,20 +26,6 @@ const { NODE_ENV } = process.env as EnvironmentVariables;
 @Module({
   imports: [
     /** Feature modules */
-
-    RouterModule.register([
-      {
-        path: '',
-        module: AppModule,
-        children: [
-          {
-            path: 'auth',
-            module: AuthModule,
-          },
-        ],
-      },
-    ]),
-
     AuthModule,
   ],
   controllers: [AppController],
