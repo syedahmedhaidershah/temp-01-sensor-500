@@ -25,25 +25,7 @@ dotenv.config();
 const { NODE_ENV } = process.env as EnvironmentVariables;
 
 @Module({
-  imports: [
-    /** Feature modules */
-
-    /** Not Needed */
-    // RouterModule.register([
-    //   {
-    //     path: '',
-    //     module: AppModule,
-    //     children: [
-    //       {
-    //         path: '/auth',
-    //         module: AuthModule,
-    //       },
-    //     ],
-    //   },
-    // ]),
-
-    AuthModule,
-  ],
+  imports: [AuthModule],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
