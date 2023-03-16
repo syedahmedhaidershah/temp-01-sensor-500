@@ -13,6 +13,7 @@ import {
 } from '@nestjs/platform-fastify';
 
 import * as dotenv from 'dotenv';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   /** Setting up environment from env files if it exists */
@@ -28,11 +29,12 @@ async function bootstrap() {
   /** Configuring runtime and bootstrapping */
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    // new FastifyAdapter(),
+    new FastifyAdapter(),
     {
       logger: ['error', 'debug', 'verbose'],
     },
   );
+  app.useGlobalPipes(new ValidationPipe());
 
   if (ENABLE_ALL_ORIGINS) return await app.listen(PORT, '0.0.0.0');
 

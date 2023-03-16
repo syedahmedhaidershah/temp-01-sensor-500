@@ -1,6 +1,6 @@
 /** Core dependencies */
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
-import { RouterModule } from '@nestjs/core';
+// import { RouterModule } from '@nestjs/core';
 
 /** Third party dependencies */
 import * as dotenv from 'dotenv';
@@ -15,7 +15,8 @@ import { MorganLoggerMiddleware } from './common/middlewares/morgan-logger/morga
 
 /** Local constants and statis */
 import EnvironmentVariables from './common/interfaces/environmentVariables';
-import { AuthController } from './modules/auth/auth.controller';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './modules/auth/guards';
 
 /** Local configuration and declarations */
 /** Setting up environment from env files if it exists, and environment isn't loaded */
@@ -24,12 +25,9 @@ dotenv.config();
 const { NODE_ENV } = process.env as EnvironmentVariables;
 
 @Module({
-  imports: [
-    /** Feature modules */
-    AuthModule,
-  ],
+  imports: [AuthModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
 export class AppModule implements NestModule {
   /** Configuring middlewares */

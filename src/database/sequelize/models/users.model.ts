@@ -1,37 +1,33 @@
 /** Third part dependencies */
 import { Column, Model, Table } from 'sequelize-typescript';
 
-
 /** Local dependencies */
-import { User as UserType } from '../../../common/types';
-
+import { User as UserType } from '../../../modules/users/types';
 
 @Table
 export class User extends Model {
+  // pseudoname for guest or chosen username
+  username: string;
 
-    // pseudoname for guest or chosen username
-    username: string;
+  firstName?: string;
 
-    firstName?: string;
+  lastName?: string;
 
-    lastName?: string;
+  deleted: boolean;
 
-    deleted: boolean;
+  isInactive?: boolean;
 
-    isInactive?: boolean;
+  // email for user
+  email?: string;
 
-    // email for user
-    email?: string;
+  // password if set up
+  password?: string;
 
-    // password if set up
-    password?: string;
-    
-    instance: UserType | undefined;
+  instance: UserType | undefined;
 
+  constructor() {
+    super();
 
-    constructor() {
-        super();
-
-        this.instance = this.toJSON() as UserType;
-    }
+    this.instance = this.toJSON() as UserType;
+  }
 }
