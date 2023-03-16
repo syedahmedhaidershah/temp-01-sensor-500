@@ -10,4 +10,5 @@ export default interface EnvironmentVariables {
   MYSQL_USERNAME?: string;
   MYSQL_DATABASE?: string;
   MYSQL_PASSWORD?: string;
+  MONGO_URL?: string;
 }

@@ -1,5 +1,7 @@
 /** Core dependencies */
 import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+
 // import { RouterModule } from '@nestjs/core';
 
 /** Third party dependencies */
@@ -22,10 +24,10 @@ import { JwtAuthGuard } from './modules/auth/guards';
 /** Setting up environment from env files if it exists, and environment isn't loaded */
 dotenv.config();
 
-const { NODE_ENV } = process.env as EnvironmentVariables;
+const { NODE_ENV, MONGO_URL } = process.env as EnvironmentVariables;
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, MongooseModule.forRoot(MONGO_URL)],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
