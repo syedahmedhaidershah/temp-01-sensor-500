@@ -71,7 +71,7 @@ export class AuthController {
   async userRefreshTokens(
     @GetCurrentUser('_id') userId: string,
     @GetCurrentUser('refreshToken') refreshToken: string,
-  ) {
+  ): Promise<Tokens> {
     return this.authService.refreshUserTokens(userId, refreshToken);
   }
 
@@ -84,7 +84,7 @@ export class AuthController {
   async adminRefreshTokens(
     @GetCurrentUser('_id') userId: string,
     @GetCurrentUser('refreshToken') refreshToken: string,
-  ) {
+  ): Promise<Tokens> {
     return this.authService.refreshAdminTokens(userId, refreshToken);
   }
 }
