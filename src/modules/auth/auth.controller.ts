@@ -6,9 +6,8 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { GetCurrentUser, Public, Roles } from 'src/common/decorators';
+import { Authorization, GetCurrentUser, Public } from 'src/common/decorators';
 import { Role } from 'src/common/enums';
-import { RolesGuard } from 'src/common/guards';
 import { UserDto } from '../users/dto';
 
 import { AuthService } from './auth.service';
@@ -56,8 +55,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Roles(Role.Admin, Role.SuperAdmin)
-  @UseGuards(RolesGuard)
+  @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('logout/admin')
   @HttpCode(HttpStatus.OK)
   async adminLogout(@GetCurrentUser('_id') userId: string): Promise<void> {
@@ -77,8 +75,7 @@ export class AuthController {
 
   @Public()
   @UseGuards(JwtRefreshAuthGuard)
-  @Roles(Role.Admin, Role.SuperAdmin)
-  @UseGuards(RolesGuard)
+  @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('refresh/admin')
   @HttpCode(HttpStatus.OK)
   async adminRefreshTokens(

@@ -73,11 +73,11 @@ export class AuthService {
     return tokens;
   }
 
-  async userLogout(userId: string) {
+  async userLogout(userId: string): Promise<void> {
     return this.usersService.logoutUser(userId);
   }
 
-  async adminLogout(userId: string) {
+  async adminLogout(userId: string): Promise<void> {
     return this.usersService.logoutAdminUser(userId);
   }
 
