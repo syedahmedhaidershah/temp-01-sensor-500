@@ -2,7 +2,7 @@
 import { Column, Model, Table } from 'sequelize-typescript';
 
 /** Local dependencies */
-import { User as UserType } from '../../../modules/users/types';
+import { UserType } from '../../../modules/users/types';
 
 @Table
 export class User extends Model {

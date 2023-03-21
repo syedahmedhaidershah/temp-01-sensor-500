@@ -18,11 +18,7 @@ import { AuthController } from './auth.controller';
 // import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
-import {
-  AccessTokenStrategy,
-  RefreshTokenStrategy,
-  LocalStrategy,
-} from './strategies';
+import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
 
 /** Local configuration and declarations */
 // const { Models } = Sequelize;
@@ -51,12 +47,7 @@ import {
 
 @Module({
   controllers: [AuthController],
-  providers: [
-    AuthService,
-    LocalStrategy,
-    AccessTokenStrategy,
-    RefreshTokenStrategy,
-  ],
+  providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
   imports: [UsersModule, PassportModule, JwtModule.register({})],
 })
 export class AuthModule {}

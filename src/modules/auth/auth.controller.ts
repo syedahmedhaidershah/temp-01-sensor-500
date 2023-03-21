@@ -4,13 +4,17 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Request,
+  Req,
   UseGuards,
 } from '@nestjs/common';
-import { Public } from 'src/common/decorators';
+import { Request } from 'express';
+import { GetCurrentUser, Public, Roles } from 'src/common/decorators';
+import { Role } from 'src/common/enums';
+import { RolesGuard } from 'src/common/guards';
+import { UserDto } from '../users/dto';
 
 import { AuthService } from './auth.service';
-import { AuthDto } from './dto';
+import { LoginDto } from './dto';
 import { JwtAuthGuard, JwtRefreshAuthGuard } from './guards';
 import { Tokens } from './types';
 
@@ -18,32 +22,78 @@ import { Tokens } from './types';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('/signup')
+  @Public()
+  @Post('signup')
   @HttpCode(HttpStatus.CREATED)
-  async signUp(@Body() dto: AuthDto) {
-    return this.authService.signUp(dto);
+  async userSignUp(@Body() dto: UserDto): Promise<Tokens> {
+    return this.authService.userSignUp(dto);
   }
 
-  // @UseGuards(LocalAuthGuard)
   @Public()
-  @Post('/login')
+  @Post('signup/admin')
+  @HttpCode(HttpStatus.CREATED)
+  async adminSignUp(@Body() dto: UserDto): Promise<Tokens> {
+    return this.authService.adminSignUp(dto);
+  }
+
+  @Public()
+  @Post('login')
   @HttpCode(HttpStatus.OK)
-  async login(@Body() dto: AuthDto): Promise<Tokens> {
-    return this.authService.login(dto);
+  async userLogin(@Body() dto: LoginDto): Promise<Tokens> {
+    return this.authService.userLogin(dto);
+  }
+
+  @Public()
+  @Post('login/admin')
+  @HttpCode(HttpStatus.OK)
+  async adminLogin(@Body() dto: LoginDto): Promise<Tokens> {
+    return this.authService.adminLogin(dto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/logout')
+  @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Request() req) {
-    return this.authService.logout(req.user);
+  async userLogout(@GetCurrentUser('_id') userId: string): Promise<void> {
+    return this.authService.userLogout(userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(RolesGuard)
+  @Post('logout/admin')
+  @HttpCode(HttpStatus.OK)
+  async adminLogout(
+    @Req() req: Request,
+    @GetCurrentUser('_id') userId: string,
+  ): Promise<void> {
+    const { user } = req;
+    console.log({ user });
+    return this.authService.adminLogout(userId);
   }
 
   @Public()
   @UseGuards(JwtRefreshAuthGuard)
-  @Post('/refresh')
+  @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  async refreshTokens(@Request() req) {
-    return this.authService.refreshTokens(req.user);
+  async userRefreshTokens(
+    @GetCurrentUser('_id') userId: string,
+    @GetCurrentUser('refreshToken') refreshToken: string,
+    // @Request req: Request,
+  ) {
+    // const { user } = req;
+    return this.authService.refreshUserTokens(userId, refreshToken);
+  }
+
+  @Public()
+  @UseGuards(JwtRefreshAuthGuard)
+  @Roles(Role.Admin, Role.SuperAdmin)
+  @UseGuards(RolesGuard)
+  @Post('refresh/admin')
+  @HttpCode(HttpStatus.OK)
+  async adminRefreshTokens(
+    @GetCurrentUser('_id') userId: string,
+    @GetCurrentUser('refreshToken') refreshToken: string,
+  ) {
+    return this.authService.refreshAdminTokens(userId, refreshToken);
   }
 }

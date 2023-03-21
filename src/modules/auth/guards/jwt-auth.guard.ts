@@ -19,6 +19,3 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return super.canActivate(context);
   }
 }
-
-@Injectable()
-export class JwtRefreshAuthGuard extends AuthGuard('jwt-refresh') {}

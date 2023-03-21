@@ -1,4 +1,4 @@
 import { SetMetadata } from '@nestjs/common';
-import { MetaDataConstants } from '../constants';
+import { Constants } from '../constants';
 
-export const Public = () => SetMetadata(MetaDataConstants.PUBLIC, true);
+export const Public = () => SetMetadata(Constants.MetaData.PUBLIC, true);

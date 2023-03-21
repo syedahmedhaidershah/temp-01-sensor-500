@@ -1,6 +1,6 @@
-import { IsNotEmpty, IsString, isString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class AuthDto {
+export class LoginDto {
   // pseudoname for guest or chosen username
   @IsNotEmpty()
   @IsString()

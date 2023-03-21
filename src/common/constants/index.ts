@@ -1,1 +1,1 @@
-export * from './metadeta.constant';
+export * from './constants';
