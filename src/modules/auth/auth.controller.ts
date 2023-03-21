@@ -4,10 +4,8 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
-import { Request } from 'express';
 import { GetCurrentUser, Public, Roles } from 'src/common/decorators';
 import { Role } from 'src/common/enums';
 import { RolesGuard } from 'src/common/guards';
@@ -62,12 +60,7 @@ export class AuthController {
   @UseGuards(RolesGuard)
   @Post('logout/admin')
   @HttpCode(HttpStatus.OK)
-  async adminLogout(
-    @Req() req: Request,
-    @GetCurrentUser('_id') userId: string,
-  ): Promise<void> {
-    const { user } = req;
-    console.log({ user });
+  async adminLogout(@GetCurrentUser('_id') userId: string): Promise<void> {
     return this.authService.adminLogout(userId);
   }
 
@@ -78,9 +71,7 @@ export class AuthController {
   async userRefreshTokens(
     @GetCurrentUser('_id') userId: string,
     @GetCurrentUser('refreshToken') refreshToken: string,
-    // @Request req: Request,
   ) {
-    // const { user } = req;
     return this.authService.refreshUserTokens(userId, refreshToken);
   }
 
