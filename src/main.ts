@@ -9,6 +9,7 @@ import EnvironmentVariables from './common/interfaces/environmentVariables';
 import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import helmet from 'helmet';
 
 async function bootstrap() {
   dotenv.config();
@@ -26,11 +27,12 @@ async function bootstrap() {
 
     //* User for fastify integration
     // new FastifyAdapter(),
-    {
-      logger: ['error', 'debug', 'verbose'],
-    },
+    // {
+    //   logger: ['error', 'debug', 'verbose'],
+    // },
   );
   app.useGlobalPipes(new ValidationPipe());
+  app.use(helmet());
 
   if (ENABLE_ALL_ORIGINS) return await app.listen(PORT, '0.0.0.0');
 

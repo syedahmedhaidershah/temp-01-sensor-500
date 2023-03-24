@@ -4,7 +4,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
   timestamps: true,
 })
 export class User {
-  @Prop({ required: true, unique: true, index: true })
+  @Prop({ required: true })
   username: string;
 
   @Prop({
@@ -12,7 +12,7 @@ export class User {
   })
   password: string;
 
-  @Prop({ required: true, unique: true, index: true })
+  @Prop({ required: true })
   email: string;
 
   @Prop({ default: '' })
@@ -21,7 +21,7 @@ export class User {
   @Prop({ default: '' })
   first_name?: string;
 
-  @Prop({ required: { required: true } })
+  @Prop({ required: true })
   phone_number?: string;
 
   @Prop({ default: false })
@@ -38,3 +38,11 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+UserSchema.index({ username: 1 }, { name: 'IDX_User_username', unique: true });
+
+UserSchema.index({ email: 1 }, { name: 'IDX_User_email', unique: true });
+
+UserSchema.index(
+  { phone_number: 1 },
+  { name: 'IDX_User_phone_number', unique: true },
+);

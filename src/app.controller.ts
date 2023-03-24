@@ -1,5 +1,12 @@
 /** Core depndencies */
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { Public } from './common/decorators';
 
-@Controller()
-export class AppController {}
+@Controller('test')
+export class AppController {
+  @Public()
+  @Get()
+  getHello(): string {
+    return 'Hello World!';
+  }
+}
