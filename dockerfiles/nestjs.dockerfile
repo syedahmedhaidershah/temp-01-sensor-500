@@ -1,5 +1,5 @@
 # 1. Use the official Node.js image as the base image
-FROM node:18-alpine
+FROM node:18
 
 # NOT REQUIRED - Volume already mapped
 # 3. Copy the local project directory to the container

@@ -14,9 +14,6 @@ services:
   mongo:
     image: mongo
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: darijali
-      MONGO_INITDB_ROOT_PASSWORD: v9F7gU7OFCe731P3
     volumes:
       - ./data:/data/db
   activemq:
