@@ -3,7 +3,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: nestjs.dockerfile
+      dockerfile: ./dockerfiles/nestjs.dockerfile
     volumes:
       - /app/node_modules
     ports:
