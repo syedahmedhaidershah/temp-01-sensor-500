@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  app:
+  api:
     build:
       context: .
       dockerfile: ./dockerfiles/nestjs.dockerfile
@@ -10,8 +10,9 @@ services:
       - 3000:3000
       - 9229:9229
     depends_on:
-      - mongo
-  mongo:
+      - mongo_db
+      - redis
+  mongo_db:
     image: mongo
     restart: always
     volumes:
@@ -21,3 +22,8 @@ services:
     ports:
       - "8161:8161"
       - "61616:61616"
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
