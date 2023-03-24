@@ -1,12 +1,12 @@
 # 1. Use the official Node.js image as the base image
-FROM node:18
+FROM node:18-alpine
 
 # NOT REQUIRED - Volume already mapped
 # 3. Copy the local project directory to the container
 COPY . /app
 
 # 2. Set the working directory
-WORKDIR /app
+WORKDIR /app-alpine
 
 
 # 4. Install nest.js globally
