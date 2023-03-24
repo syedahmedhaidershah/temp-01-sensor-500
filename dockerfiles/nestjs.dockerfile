@@ -6,7 +6,7 @@ FROM node:18-alpine
 COPY . /app
 
 # 2. Set the working directory
-WORKDIR /app-alpine
+WORKDIR /app
 
 
 # 4. Install nest.js globally
