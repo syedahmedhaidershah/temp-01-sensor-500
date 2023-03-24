@@ -5,24 +5,45 @@ import { UpdateChairDto } from './dto/update-chair.dto';
 import { ChairType } from './types';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { PaginationDefaultQuery, PaginationDefaultQueryOptions } from 'src/common/interfaces';
 
 @Injectable()
 export class ChairService {
   constructor(
     @InjectModel(Chair.name) private readonly chairModel: Model<ChairType>,
-  ) {}
-  create(createChairDto: CreateChairDto):Promise<ChairType> {
+  ) { }
+  create(createChairDto: CreateChairDto): Promise<ChairType> {
     const createdChair = new this.chairModel(createChairDto);
     return createdChair.save();
   }
 
-  async findAll():Promise<ChairType[]> {
-    const allChairs = await this.chairModel.find();
+  async findAll(
+    query: PaginationDefaultQuery = { },
+    options: PaginationDefaultQueryOptions = {}
+  ): Promise<ChairType[]> {
+    const { skip = 0, limit = 1 } = query;
+
+    const { matchQuery = {} } = options;
+
+    /**
+     * @note Using pages logic for pagination, if we would be going for infinite scrolling, we would:
+     * 1. Switch Mongoose methods by raw aggregation query
+     * 2. Use Exclusion with IDs + indexes for performance
+     */
+    const allChairs = await this.chairModel
+      .find(matchQuery)
+      .skip(+skip * +limit)
+      .limit(+limit);
+
     return allChairs;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} chair`;
+  /**
+   * This returns a chair using Mongoose Object Id
+   */
+  async findOne(id: string): Promise<ChairType | null> {
+    const found = await this.findAll({}, { matchQuery: { _id: id } }) || [];
+    return found.pop() || null;
   }
 
   update(id: number, updateChairDto: UpdateChairDto) {
