@@ -12,7 +12,10 @@ services:
     depends_on:
       - mongo_db
       - redis
+    links:
+      - mongo_db
   mongo_db:
+    container_name: mongo_db
     image: mongo
     restart: always
     volumes:
