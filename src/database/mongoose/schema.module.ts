@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AdminUser, AdminUserSchema, User, UserSchema } from './schemas';
+import { AdminUser, AdminUserSchema, Chair, ChairSchema, User, UserSchema } from './schemas';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: AdminUser.name, schema: AdminUserSchema },
+      {name:Chair.name,schema:ChairSchema}
       // add more models here
     ]),
   ],
@@ -14,6 +15,7 @@ import { AdminUser, AdminUserSchema, User, UserSchema } from './schemas';
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
       { name: AdminUser.name, schema: AdminUserSchema },
+      {name:Chair.name,schema:ChairSchema}
 
       // export models here
     ]),
