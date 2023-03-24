@@ -17,15 +17,14 @@ export class RefreshTokenStrategy extends PassportStrategy(
 ) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromHeader('x-refresh-token'),
       secretOrKey: JWT_SECRET_REFRESH_TOKEN_KEY,
       passReqToCallback: true,
     });
   }
   async validate(req: Request, payload: JwtPayloadType) {
-    const refreshToken = req.headers['authorization']
-      .replace('Bearer', '')
-      .trim();
+    console.log('run');
+    const refreshToken = req.headers['x-refresh-token'];
     return { ...payload, refreshToken };
   }
 }

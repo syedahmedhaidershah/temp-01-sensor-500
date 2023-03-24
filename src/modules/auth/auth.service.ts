@@ -12,6 +12,12 @@ import { LoginDto } from './dto';
 import { Tokens } from './types';
 import * as dotenv from 'dotenv';
 import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
+import { InjectModel } from '@nestjs/mongoose';
+import {
+  ExpiredToken,
+  ExpiredTokenDocument,
+} from 'src/database/mongoose/schemas/expired-token.schema';
+import { Model } from 'mongoose';
 
 dotenv.config();
 
@@ -23,6 +29,8 @@ export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    @InjectModel(ExpiredToken.name)
+    private readonly expiredTokenModel: Model<ExpiredTokenDocument>,
   ) {}
 
   async userLogin(dto: LoginDto): Promise<Tokens> {
@@ -73,11 +81,15 @@ export class AuthService {
     return tokens;
   }
 
-  async userLogout(userId: string): Promise<void> {
+  async userLogout(userId: string, token: string): Promise<void> {
+    const expiredToken = new this.expiredTokenModel({ expired_token: token });
+    await expiredToken.save();
     return this.usersService.logoutUser(userId);
   }
 
-  async adminLogout(userId: string): Promise<void> {
+  async adminLogout(userId: string, token: string): Promise<void> {
+    const expiredToken = new this.expiredTokenModel({ expired_token: token });
+    await expiredToken.save();
     return this.usersService.logoutAdminUser(userId);
   }
 

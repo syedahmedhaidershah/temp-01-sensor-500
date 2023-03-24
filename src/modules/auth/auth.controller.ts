@@ -4,15 +4,17 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
+import { Request } from 'express';
 import { Authorization, GetCurrentUser, Public } from 'src/common/decorators';
 import { Role } from 'src/common/enums';
 import { UserDto } from '../users/dto';
 
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto';
-import { JwtAuthGuard, JwtRefreshAuthGuard } from './guards';
+import { JwtRefreshAuthGuard } from './guards';
 import { Tokens } from './types';
 
 @Controller('auth')
@@ -47,19 +49,26 @@ export class AuthController {
     return this.authService.adminLogin(dto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async userLogout(@GetCurrentUser('_id') userId: string): Promise<void> {
-    return this.authService.userLogout(userId);
+  async userLogout(
+    @Req() req: Request,
+    @GetCurrentUser('_id') userId: string,
+  ): Promise<void> {
+    const token = req.headers['authorization'].replace('Bearer ', '').trim();
+
+    return this.authService.userLogout(userId, token);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('logout/admin')
   @HttpCode(HttpStatus.OK)
-  async adminLogout(@GetCurrentUser('_id') userId: string): Promise<void> {
-    return this.authService.adminLogout(userId);
+  async adminLogout(
+    @Req() req: Request,
+    @GetCurrentUser('_id') userId: string,
+  ): Promise<void> {
+    const token = req.headers['authorization'].replace('Bearer ', '').trim();
+    return this.authService.adminLogout(userId, token);
   }
 
   @Public()
@@ -74,8 +83,8 @@ export class AuthController {
   }
 
   @Public()
-  @UseGuards(JwtRefreshAuthGuard)
   @Authorization(Role.Admin, Role.SuperAdmin)
+  @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh/admin')
   @HttpCode(HttpStatus.OK)
   async adminRefreshTokens(
