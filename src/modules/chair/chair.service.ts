@@ -12,9 +12,9 @@ export class ChairService {
   constructor(
     @InjectModel(Chair.name) private readonly chairModel: Model<ChairType>,
   ) { }
-  create(createChairDto: CreateChairDto): Promise<ChairType> {
+  async create(createChairDto: CreateChairDto): Promise<ChairType> {
     const createdChair = new this.chairModel(createChairDto);
-    return createdChair.save();
+    return await createdChair.save();
   }
 
   async findAll(
@@ -46,11 +46,18 @@ export class ChairService {
     return found.pop() || null;
   }
 
-  update(id: number, updateChairDto: UpdateChairDto) {
-    return `This action updates a #${id} chair`;
+  async update(id: string, updateChairDto: UpdateChairDto): Promise<ChairType | null> {
+    const updatedChair = await this.chairModel.findByIdAndUpdate(id, updateChairDto, { new: true });
+    return updatedChair || null;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} chair`;
+  async remove(id: string): Promise<boolean> {
+    const deletedChair = await this.chairModel.findByIdAndDelete(id);
+    return Boolean(deletedChair);
+  }
+
+  async findById(id: string): Promise<ChairType | null> {
+    const found = await this.chairModel.findOne({ id });
+    return found || null;
   }
 }

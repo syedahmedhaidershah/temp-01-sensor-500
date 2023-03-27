@@ -28,11 +28,16 @@ export class ChairController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateChairDto: UpdateChairDto) {
-    return this.chairService.update(+id, updateChairDto);
+    return this.chairService.update(id, updateChairDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.chairService.remove(+id);
+    return this.chairService.remove(id);
+  }
+
+  @Get('findById/:id')
+  findById(@Param('id') id: string) {
+    return this.chairService.findOne(id);
   }
 }
