@@ -19,6 +19,7 @@ import { MorganLoggerMiddleware } from './common/middlewares/morgan-logger/morga
 import EnvironmentVariables from './common/interfaces/environmentVariables';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards';
+import { ChairModule } from './modules/chair/chair.module';
 import { CheckExpiredToken } from './common/middlewares/check-expired-token';
 import { ModelsModule } from './database/mongoose';
 
@@ -29,7 +30,7 @@ dotenv.config();
 const { NODE_ENV, MONGO_URL } = process.env as EnvironmentVariables;
 
 @Module({
-  imports: [AuthModule, MongooseModule.forRoot(MONGO_URL), ModelsModule],
+  imports: [AuthModule, MongooseModule.forRoot(MONGO_URL), ModelsModule,ChairModule],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })

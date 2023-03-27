@@ -27,9 +27,9 @@ async function bootstrap() {
 
     //* User for fastify integration
     // new FastifyAdapter(),
-    {
-      logger: ['error', 'debug', 'verbose'],
-    },
+    // {
+    //   logger: ['error', 'debug', 'verbose'],
+    // },
   );
   app.useGlobalPipes(new ValidationPipe());
   app.use(helmet());
