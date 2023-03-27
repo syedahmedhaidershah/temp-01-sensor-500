@@ -23,6 +23,7 @@ import { CheckExpiredToken } from './common/middlewares/check-expired-token';
 import { ModelsModule } from './database/mongoose';
 import { MqttModule } from './modules/mqtt/mqtt.module';
 import { MqttClientService } from './common/services/mqtt-client/mqtt-client.service';
+import { RedisCacheModule } from './modules/cache/cache.module';
 
 
 
@@ -52,6 +53,7 @@ const toExclueRouteInfosFromcheckExpiredToken: RouteInfo[] = [
     ModelsModule,
     ChairModule,
     MqttModule,
+    RedisCacheModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }, MqttClientService],
