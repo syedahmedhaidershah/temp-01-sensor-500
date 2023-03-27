@@ -22,6 +22,7 @@ import { JwtAuthGuard } from './modules/auth/guards';
 import { ChairModule } from './modules/chair/chair.module';
 import { CheckExpiredToken } from './common/middlewares/check-expired-token';
 import { ModelsModule } from './database/mongoose';
+import { RedisCacheModule } from './modules/cache/cache.module';
 
 /** Local configuration and declarations */
 /** Setting up environment from env files if it exists, and environment isn't loaded */
@@ -30,7 +31,13 @@ dotenv.config();
 const { NODE_ENV, MONGO_URL } = process.env as EnvironmentVariables;
 
 @Module({
-  imports: [AuthModule, MongooseModule.forRoot(MONGO_URL), ModelsModule,ChairModule],
+  imports: [
+    AuthModule,
+    MongooseModule.forRoot(MONGO_URL),
+    ModelsModule,
+    ChairModule,
+    RedisCacheModule,
+  ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
 })
