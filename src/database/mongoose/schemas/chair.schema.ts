@@ -23,7 +23,7 @@ export class Chair {
 export const ChairSchema = SchemaFactory.createForClass(Chair);
 
 ChairSchema.index(
-  {id:1},
+  {chair_id:1},
   {unique:true,name:'IDX-Chair_id'}
 )
 ChairSchema.index(
