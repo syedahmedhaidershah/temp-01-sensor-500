@@ -16,4 +16,5 @@ export default interface EnvironmentVariables {
   readonly BCRYPT_SALT_ROUND?: number;
   readonly JWT_SECRET_ACCESS_TOKEN_KEY?: string;
   readonly JWT_SECRET_REFRESH_TOKEN_KEY?: string;
+  readonly MQTT_HOST?: string;
 }
