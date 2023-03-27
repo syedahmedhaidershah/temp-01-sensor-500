@@ -1,7 +1,7 @@
 {
-  "name": "nestjs-boilerplate",
-  "version": "0.0.1",
-  "description": "A Nest.JS boilerplate to be used within Cloud Primero's backend projects",
+  "name": "greenfox-backend",
+  "version": "0.0.2",
+  "description": "GreenFox backend extended from Nest.JS boilerplate to be used within Cloud Primero's backend projects",
   "author": "syedahmedhaidershah",
   "private": true,
   "license": "UNLICENSED",
