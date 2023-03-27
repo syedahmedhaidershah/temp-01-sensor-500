@@ -56,9 +56,8 @@ export class ChairService {
     return Boolean(deletedChair);
   }
 
-  async findById(chair_id: string): Promise<ChairType | null> {
-    console.log("Chair Id: ",chair_id)
-    const found = await this.chairModel.findOne({ chair_id:chair_id });
+  async findById(id: string): Promise<ChairType | null> {
+    const found = await this.chairModel.findOne({ id:id });
     return found || null;
   }
 }

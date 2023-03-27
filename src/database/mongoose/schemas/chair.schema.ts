@@ -6,7 +6,7 @@ import { ChairStates } from 'src/common/enums';
 })
 export class Chair {
   @Prop({ required: true})
-  chair_id: string;
+  id: string;
 
   @Prop( { required: true,default:0 })
   battery: number;
@@ -23,10 +23,10 @@ export class Chair {
 export const ChairSchema = SchemaFactory.createForClass(Chair);
 
 ChairSchema.index(
-  {chair_id:1},
-  {unique:true,name:'IDX-Chair_id'}
+  {id:1},
+  {unique:true,name:'IDX-Chair-id'}
 )
 ChairSchema.index(
   {qr_code:1},
-  {unique:true,name:'IDX-Chair_qr_code'}
+  {unique:true,name:'IDX-Chair-qr_code'}
 )
