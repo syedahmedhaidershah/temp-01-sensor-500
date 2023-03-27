@@ -37,7 +37,9 @@ lerna-debug.log*
 
 # Temp volumes
 data
+/data
 
 
 # Scripts
 scripts/local
+package-lock.json
