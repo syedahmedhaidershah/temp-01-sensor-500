@@ -1,45 +1,75 @@
 /** Core dependencies */
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer, RequestMethod } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { APP_GUARD } from '@nestjs/core';
+import { RouteInfo } from '@nestjs/common/interfaces';
+
 
 // import { RouterModule } from '@nestjs/core';
 
 /** Third party dependencies */
 import * as dotenv from 'dotenv';
 
+
+
 /** Local dependencies */
 import { AuthModule } from './modules/auth/auth.module';
-
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-
 import { MorganLoggerMiddleware } from './common/middlewares/morgan-logger/morgan-logger.middleware';
-
-/** Local constants and statis */
-import EnvironmentVariables from './common/interfaces/environmentVariables';
-import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards';
 import { ChairModule } from './modules/chair/chair.module';
 import { CheckExpiredToken } from './common/middlewares/check-expired-token';
 import { ModelsModule } from './database/mongoose';
+import { MqttModule } from './modules/mqtt/mqtt.module';
+import { MqttClientService } from './common/services/mqtt-client/mqtt-client.service';
+
+
+
+/** Local constants and statis */
+import EnvironmentVariables from './common/interfaces/environmentVariables';
+
 
 /** Local configuration and declarations */
 /** Setting up environment from env files if it exists, and environment isn't loaded */
 dotenv.config();
 
+
+/** Application configuration and declarations */
 const { NODE_ENV, MONGO_URL } = process.env as EnvironmentVariables;
 
+const checkExpiredTokenRouteInfos: RouteInfo[] = [
+  { path: 'auth/(.*)', method: RequestMethod.ALL },
+  { path: 'health-check', method: RequestMethod.GET },
+]
+
+
+
 @Module({
-  imports: [AuthModule, MongooseModule.forRoot(MONGO_URL), ModelsModule,ChairModule],
+  imports: [
+    AuthModule,
+    MongooseModule.forRoot(MONGO_URL),
+    ModelsModule,
+    ChairModule,
+    MqttModule,
+  ],
   controllers: [AppController],
-  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
+  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }, MqttClientService],
 })
 export class AppModule implements NestModule {
   /** Configuring middlewares */
   configure(consumer: MiddlewareConsumer) {
+    /** Enabling logger for local development */
     if (NODE_ENV === 'devlocal') {
-      consumer.apply(MorganLoggerMiddleware).forRoutes('/');
+      consumer
+        .apply(MorganLoggerMiddleware)
+        .forRoutes('/');
     }
-    consumer.apply(CheckExpiredToken).exclude('auth/(.*)').forRoutes('*');
+
+    /** Disabling Check Expired Token middleware */
+    consumer
+      .apply(CheckExpiredToken)
+      .exclude(...checkExpiredTokenRouteInfos)
+      .forRoutes('*')
   }
 }
