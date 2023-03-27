@@ -38,11 +38,11 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-UserSchema.index({ username: 1 }, { name: 'IDX_User_username', unique: true });
+UserSchema.index({ username: 1 }, { name: 'IDX-User-username', unique: true });
 
-UserSchema.index({ email: 1 }, { name: 'IDX_User_email', unique: true });
+UserSchema.index({ email: 1 }, { name: 'IDX-User-email', unique: true });
 
 UserSchema.index(
   { phone_number: 1 },
-  { name: 'IDX_User_phone_number', unique: true },
+  { name: 'IDX-User-phone_number', unique: true },
 );

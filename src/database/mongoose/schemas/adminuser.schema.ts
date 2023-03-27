@@ -10,15 +10,15 @@ export const AdminUserSchema = SchemaFactory.createForClass(AdminUser);
 
 AdminUserSchema.index(
   { username: 1 },
-  { name: 'IDX_AdminUser_username', unique: true },
+  { name: 'IDX-AdminUser-username', unique: true },
 );
 
 AdminUserSchema.index(
   { email: 1 },
-  { name: 'IDX_AdminUser_email', unique: true },
+  { name: 'IDX-AdminUser-email', unique: true },
 );
 
 AdminUserSchema.index(
   { phone_number: 1 },
-  { name: 'IDX_AdminUser_phone_number', unique: true },
+  { name: 'IDX-AdminUser-phone_number', unique: true },
 );
