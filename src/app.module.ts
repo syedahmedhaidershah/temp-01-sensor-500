@@ -38,7 +38,7 @@ dotenv.config();
 /** Application configuration and declarations */
 const { NODE_ENV, MONGO_URL } = process.env as EnvironmentVariables;
 
-const checkExpiredTokenRouteInfos: RouteInfo[] = [
+const toExclueRouteInfosFromcheckExpiredToken: RouteInfo[] = [
   { path: 'auth/(.*)', method: RequestMethod.ALL },
   { path: 'health-check', method: RequestMethod.GET },
 ]
@@ -69,7 +69,7 @@ export class AppModule implements NestModule {
     /** Disabling Check Expired Token middleware */
     consumer
       .apply(CheckExpiredToken)
-      .exclude(...checkExpiredTokenRouteInfos)
+      .exclude(...toExclueRouteInfosFromcheckExpiredToken)
       .forRoutes('*')
   }
 }
