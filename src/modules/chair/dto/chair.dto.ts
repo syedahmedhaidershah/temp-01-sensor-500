@@ -10,7 +10,7 @@ import {
 
     @IsString()
     @IsNotEmpty()
-    id: string;
+    chair_id: string;
 
     @IsNumber()
     @IsNotEmpty()

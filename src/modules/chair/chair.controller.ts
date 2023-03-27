@@ -36,8 +36,8 @@ export class ChairController {
     return this.chairService.remove(id);
   }
 
-  @Get('findById/:id')
+  @Get('find-by-id/:id')
   findById(@Param('id') id: string) {
-    return this.chairService.findOne(id);
+    return this.chairService.findById(id);
   }
 }

@@ -3,7 +3,7 @@ import { ChairStates } from "src/common/enums";
 
 export type ChairType = {
 
-    id: string;
+    chair_id: string;
 
     battery: number;
 

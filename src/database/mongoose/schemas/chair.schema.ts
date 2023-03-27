@@ -6,7 +6,7 @@ import { ChairStates } from 'src/common/enums';
 })
 export class Chair {
   @Prop({ required: true})
-  id: string;
+  chair_id: string;
 
   @Prop( { required: true,default:0 })
   battery: number;
