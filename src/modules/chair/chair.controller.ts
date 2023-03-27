@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ChairService } from './chair.service';
 import { CreateChairDto } from './dto/create-chair.dto';
 import { UpdateChairDto } from './dto/update-chair.dto';
@@ -9,12 +17,12 @@ export class ChairController {
   constructor(private readonly chairService: ChairService) {}
 
   @Post()
-  create(@Body() createChairDto: CreateChairDto):Promise<ChairType> {
+  create(@Body() createChairDto: CreateChairDto): Promise<ChairType> {
     return this.chairService.create(createChairDto);
   }
 
   @Get()
-  findAll():Promise<ChairType[]> {
+  findAll(): Promise<ChairType[]> {
     return this.chairService.findAll();
   }
 
