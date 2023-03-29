@@ -2,11 +2,11 @@
 import { Controller, Get } from '@nestjs/common';
 import { Public } from './common/decorators';
 
-@Controller('test')
+@Controller()
 export class AppController {
   @Public()
-  @Get()
+  @Get('health-check')
   getHello(): string {
-    return 'Hello World!';
+    return 'ok';
   }
 }
