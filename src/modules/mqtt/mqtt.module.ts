@@ -17,5 +17,8 @@ import { MqttClientService } from 'src/common/services';
     MqttService,
     MqttClientService,
   ],
+  exports: [
+    MqttService
+  ]
 })
 export class MqttModule {}

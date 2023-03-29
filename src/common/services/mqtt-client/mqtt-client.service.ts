@@ -12,35 +12,42 @@ import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
 
 const {
     MQTT_HOST: mqttHost,
+    MQTT_USERNAME: mqttUsername,
+    MQTT_PASSWORD: mqttPassword,
 } = process.env as EnvironmentVariables;
 
 
 @Injectable()
 export class MqttClientService {
-    client: MQTT.AsyncMqttClient;
+    static client: MQTT.AsyncMqttClient;
 
     constructor() {
         try {
-            this.client = MQTT.connect(mqttHost);
+            MqttClientService.client = MQTT.connect(
+                mqttHost,
+                {
+                    username: mqttUsername,
+                    password: mqttPassword,
+                }
+            );
         } catch (exc) {
             console.log(exc);
         }
     }
 
-    asynConnection = async (): Promise<MQTT.AsyncMqttClient> => {
-        if (this.client)
-            return this.client;
+    asyncConnection = async (): Promise<MQTT.AsyncMqttClient> => {
+        if (MqttClientService.client)
+            return MqttClientService.client;
 
         return await new Promise((resolve, reject) => {
-            this.client.on(
+            MqttClientService.client.on(
                 'connect',
-                resolve
-                    .bind(this, this.client)
+                () => { resolve(MqttClientService.client) }
             );
 
-            this.client.on('error', reject);
+            MqttClientService.client.on('error', reject);
         });
     }
 
-    
+
 }

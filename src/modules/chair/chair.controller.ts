@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Public } from 'src/common/decorators';
 import { PaginationDefaultQuery } from 'src/common/interfaces';
 import { ChairService } from './chair.service';
 import { CreateChairDto } from './dto/create-chair.dto';
@@ -7,7 +8,16 @@ import { ChairType } from './types';
 
 @Controller('chair')
 export class ChairController {
-  constructor(private readonly chairService: ChairService) { }
+  constructor(
+    private readonly chairService: ChairService,
+  ) { }
+
+  @Public()
+  @Get('health-check')
+  async healthCheck() {
+    return 'ok';
+  }
+
 
   @Post()
   create(@Body() createChairDto: CreateChairDto): Promise<ChairType> {
