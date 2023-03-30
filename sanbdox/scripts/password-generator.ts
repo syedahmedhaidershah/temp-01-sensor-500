@@ -1,28 +1,32 @@
+import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import * as dotenv from 'dotenv';
-
-
-
-import * as JWT from 'jsonwebtoken';
-
-
 
 dotenv.config();
 
-
-
 const {
-    argv: [password] = [],
     env: {
-        JWT_SECRET_ACCESS_TOKEN_KEY: JWT_SECRET_KEY
-    }
-} = process;
+        CRYPTO_ENCRYPTION_ALGORITHM,
+        CRYPTO_DIGEST_METHOD,
+        BCRYPT_SALT_ROUND,
+    },
+    argv: [password] = [],
+} = process as any;
 
-if (!JWT_SECRET_KEY)
-    throw new Error('no password JWT_SECRET_KEY: '.concat(JWT_SECRET_KEY));
+export const hashData = (data: string) => {
+    const hash = crypto
+        .createHash(CRYPTO_ENCRYPTION_ALGORITHM)
+        .update(data)
+        .digest(CRYPTO_DIGEST_METHOD);
+    return bcrypt.hash(hash, Number(BCRYPT_SALT_ROUND));
+};
 
 
 if (!password)
     throw new Error('no password provided');
 
-JWT
-    .sign(password, JWT_SECRET_KEY, console.log)
+(async () => {
+    hashData(password)
+        .then(console.log)
+        .catch(console.log)
+})();
