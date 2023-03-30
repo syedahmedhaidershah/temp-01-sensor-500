@@ -19,11 +19,11 @@ const {
 
 @Injectable()
 export class MqttClientService {
-    static client: MQTT.AsyncMqttClient;
+    client: MQTT.AsyncMqttClient;
 
     constructor() {
         try {
-            MqttClientService.client = MQTT.connect(
+            this.client = MQTT.connect(
                 mqttHost,
                 {
                     username: mqttUsername,
@@ -36,16 +36,16 @@ export class MqttClientService {
     }
 
     asyncConnection = async (): Promise<MQTT.AsyncMqttClient> => {
-        if (MqttClientService.client)
-            return MqttClientService.client;
+        if (this.client)
+            return this.client;
 
         return await new Promise((resolve, reject) => {
-            MqttClientService.client.on(
+            this.client.on(
                 'connect',
-                () => { resolve(MqttClientService.client) }
+                () => { resolve(this.client) }
             );
 
-            MqttClientService.client.on('error', reject);
+            this.client.on('error', reject);
         });
     }
 

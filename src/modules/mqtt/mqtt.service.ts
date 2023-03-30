@@ -13,4 +13,16 @@ export class MqttService {
     ) {
     }
 
+    testService = async () => {
+        const connection = await this.mqtt.asyncConnection();
+
+        connection.on('message', (topic, message) => { console.log(topic, ': ', message.toString()) });
+
+        connection.subscribe('test');
+
+        connection.publish('test', 'test/1');
+
+        connection.unsubscribe('test');
+    }
+
 }
