@@ -11,9 +11,11 @@ import { Request } from 'express';
 import { Authorization, GetCurrentUser, Public } from 'src/common/decorators';
 import { Role } from 'src/common/enums';
 import { UserDto } from '../users/dto';
+import { UserType } from '../users/types';
+import { UserSafeType } from '../users/types/users-safe.type';
 
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto';
+import { GenerateOtpDto, LoginDto, VerifyOtpDto } from './dto';
 import { JwtRefreshAuthGuard } from './guards';
 import { Tokens } from './types';
 
@@ -24,14 +26,20 @@ export class AuthController {
   @Public()
   @Post('signup')
   @HttpCode(HttpStatus.CREATED)
-  async userSignUp(@Body() dto: UserDto): Promise<Tokens> {
-    return this.authService.userSignUp(dto);
+  async userSignUp(@Body() userDto: UserDto): Promise<{
+    user: UserSafeType;
+    tokens: Tokens;
+  }> {
+    return this.authService.userSignUp(userDto);
   }
 
   @Public()
+  @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('signup/admin')
   @HttpCode(HttpStatus.CREATED)
-  async adminSignUp(@Body() dto: UserDto): Promise<Tokens> {
+  async adminSignUp(
+    @Body() dto: UserDto,
+  ): Promise<{ user: Omit<UserType, 'password'>; tokens: Tokens }> {
     return this.authService.adminSignUp(dto);
   }
 
@@ -43,6 +51,7 @@ export class AuthController {
   }
 
   @Public()
+  @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('login/admin')
   @HttpCode(HttpStatus.OK)
   async adminLogin(@Body() dto: LoginDto): Promise<Tokens> {
@@ -92,5 +101,35 @@ export class AuthController {
     @GetCurrentUser('refreshToken') refreshToken: string,
   ): Promise<Tokens> {
     return this.authService.refreshAdminTokens(userId, refreshToken);
+  }
+
+  // @Public()
+  // @Post('otp/generate')
+  // @HttpCode(HttpStatus.OK)
+  // async generateUserOtp(@Body() dto: GenerateOtpDto) {
+  //   return this.authService.generateUserOtp(dto);
+  // }
+
+  // @Post('otp/generate/admin')
+  // @HttpCode(HttpStatus.OK)
+  // async generateAdminOTP() {
+  //   return this.authService.generateAdminOtp();
+  // }
+
+  @Post('otp/verify')
+  @HttpCode(HttpStatus.OK)
+  async verifyUserOtp(
+    @Body() verifyOtpDto: VerifyOtpDto,
+  ): Promise<UserSafeType> {
+    return this.authService.verifyUserOtp(verifyOtpDto);
+  }
+
+  @Authorization(Role.Admin, Role.SuperAdmin)
+  @Post('otp/verify/admin')
+  @HttpCode(HttpStatus.OK)
+  async verifyAdminOtp(
+    @Body() verifyOtpDto: VerifyOtpDto,
+  ): Promise<UserSafeType> {
+    return this.authService.verifyAdminOtp(verifyOtpDto);
   }
 }

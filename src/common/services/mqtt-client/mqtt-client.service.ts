@@ -1,21 +1,17 @@
 /** Core dependencies */
 import { Injectable } from '@nestjs/common';
 
-
 /** Third party dependencies */
 import * as MQTT from 'async-mqtt';
 
-
 /** Local configurations */
 import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
-
 
 const {
     MQTT_HOST: mqttHost,
     MQTT_USERNAME: mqttUsername,
     MQTT_PASSWORD: mqttPassword,
 } = process.env as EnvironmentVariables;
-
 
 @Injectable()
 export class MqttClientService {
@@ -36,6 +32,7 @@ export class MqttClientService {
         }
     }
 
+
     getClient = async (): Promise<MQTT.AsyncMqttClient> => {
         if (this.client)
             return this.client;
@@ -48,7 +45,6 @@ export class MqttClientService {
 
             this.client.on('error', reject);
         });
+
     }
-
-
 }
