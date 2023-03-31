@@ -5,21 +5,24 @@ import { UpdateChairDto } from './dto/update-chair.dto';
 import { ChairType } from './types';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { PaginationDefaultQuery, PaginationDefaultQueryOptions } from 'src/common/interfaces';
+import {
+  PaginationDefaultQuery,
+  PaginationDefaultQueryOptions,
+} from 'src/common/interfaces';
 
 @Injectable()
 export class ChairService {
   constructor(
     @InjectModel(Chair.name) private readonly chairModel: Model<ChairType>,
-  ) { }
+  ) {}
   async create(createChairDto: CreateChairDto): Promise<ChairType> {
     const createdChair = new this.chairModel(createChairDto);
     return await createdChair.save();
   }
 
   async findAll(
-    query: PaginationDefaultQuery = { },
-    options: PaginationDefaultQueryOptions = {}
+    query: PaginationDefaultQuery = {},
+    options: PaginationDefaultQueryOptions = {},
   ): Promise<ChairType[]> {
     const { skip = 0, limit = 1 } = query;
 
@@ -42,12 +45,19 @@ export class ChairService {
    * This returns a chair using Mongoose Object Id
    */
   async findOne(id: string): Promise<ChairType | null> {
-    const found = await this.findAll({}, { matchQuery: { _id: id } }) || [];
+    const found = (await this.findAll({}, { matchQuery: { _id: id } })) || [];
     return found.pop() || null;
   }
 
-  async update(id: string, updateChairDto: UpdateChairDto): Promise<ChairType | null> {
-    const updatedChair = await this.chairModel.findByIdAndUpdate(id, updateChairDto, { new: true });
+  async update(
+    id: string,
+    updateChairDto: UpdateChairDto,
+  ): Promise<ChairType | null> {
+    const updatedChair = await this.chairModel.findByIdAndUpdate(
+      id,
+      updateChairDto,
+      { new: true },
+    );
     return updatedChair || null;
   }
 
@@ -57,7 +67,7 @@ export class ChairService {
   }
 
   async findById(id: string): Promise<ChairType | null> {
-    const found = await this.chairModel.findOne({ id:id });
+    const found = await this.chairModel.findOne({ id: id });
     return found || null;
   }
 }

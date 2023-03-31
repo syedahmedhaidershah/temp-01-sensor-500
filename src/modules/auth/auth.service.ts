@@ -122,11 +122,11 @@ export class AuthService {
     if (!isAdminRole)
       throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
-    const admin = await this.validateUser(dto.username, dto.password);
+    const admin = await this.usersService.findAdminUserByUsername(dto.username);
 
     if (admin)
       throw new ForbiddenException(
-        Constants.ErrorMessages.USER_USERNAME_ALREADY_EXIST,
+        Constants.ErrorMessages.ADMIN_USERNAME_ALREADY_EXIST,
       );
 
     const hashedPassword = await hashData(dto.password);

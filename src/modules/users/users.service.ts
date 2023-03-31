@@ -28,9 +28,20 @@ export class UsersService {
     return createdUser.toObject();
   }
 
-  async createAdminUser(userDto: UserType): Promise<UserType> {
-    const createdUser = new this.adminUserModel(userDto);
-    return createdUser.save();
+  async createAdminUser(
+    userDto: UserType,
+    options: any = {},
+  ): Promise<UserType> {
+    const { lean = true } = options;
+
+    const admin = new this.adminUserModel(userDto);
+    const createdAdmin = await admin.save();
+
+    if (!lean) {
+      return createdAdmin;
+    }
+
+    return createdAdmin.toObject();
   }
 
   async findUserByEmailAndUpdate(

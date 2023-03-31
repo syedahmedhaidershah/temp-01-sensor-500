@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { Public } from 'src/common/decorators';
 import { PaginationDefaultQuery } from 'src/common/interfaces';
 import { ChairService } from './chair.service';
@@ -8,9 +17,7 @@ import { ChairType } from './types';
 
 @Controller('chair')
 export class ChairController {
-  constructor(
-    private readonly chairService: ChairService,
-  ) { }
+  constructor(private readonly chairService: ChairService) {}
 
   @Public()
   @Get('health-check')
@@ -18,16 +25,13 @@ export class ChairController {
     return 'ok';
   }
 
-
   @Post()
   create(@Body() createChairDto: CreateChairDto): Promise<ChairType> {
     return this.chairService.create(createChairDto);
   }
 
   @Get()
-  findAll(
-    @Query() query: PaginationDefaultQuery
-  ): Promise<ChairType[]> {
+  findAll(@Query() query: PaginationDefaultQuery): Promise<ChairType[]> {
     return this.chairService.findAll(query);
   }
 
