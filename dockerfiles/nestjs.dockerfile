@@ -8,11 +8,8 @@ COPY . /app
 # 2. Set the working directory
 WORKDIR /app
 
-
 # 4. Install nest.js globally
 RUN npm install -g @nestjs/cli
-
-WORKDIR /app
 
 # 5. Install the dependencies
 RUN npm install

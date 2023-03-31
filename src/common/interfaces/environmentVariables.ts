@@ -23,4 +23,7 @@ export default interface EnvironmentVariables {
   readonly CACHE_PORT?: number;
   readonly CACHE_ISGLOBAL?: boolean;
   readonly CACHE_TTL?: number;
+  readonly MQTT_HOST?: string;
+  readonly MQTT_USERNAME?: string;
+  readonly MQTT_PASSWORD?: string;
 }

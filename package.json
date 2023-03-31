@@ -31,6 +31,7 @@
     "@nestjs/sequelize": "^9.0.0",
     "@sendgrid/mail": "^7.7.0",
     "@types/uuid": "^9.0.1",
+    "async-mqtt": "^2.6.3",
     "bcrypt": "^5.1.0",
     "cache-manager": "^5.2.0",
     "cache-manager-redis-store": "^2.0.0",

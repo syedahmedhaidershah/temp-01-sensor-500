@@ -40,6 +40,8 @@ data
 /data
 
 
-# Scripts
+# Scripts & Configurations
 scripts/local
 package-lock.json
+dockerfiles
+conf\dockerContainers
