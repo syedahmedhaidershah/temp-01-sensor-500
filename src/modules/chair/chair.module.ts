@@ -7,9 +7,6 @@ import { MqttModule } from '../mqtt/mqtt.module';
 @Module({
   controllers: [ChairController],
   providers: [ChairService],
-  imports:[
-    ModelsModule,
-    MqttModule,
-  ]
+  imports: [ModelsModule, MqttModule],
 })
 export class ChairModule {}

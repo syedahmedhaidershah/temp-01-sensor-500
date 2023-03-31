@@ -15,7 +15,7 @@ import { UserType } from '../users/types';
 import { UserSafeType } from '../users/types/users-safe.type';
 
 import { AuthService } from './auth.service';
-import { GenerateOtpDto, LoginDto, VerifyOtpDto } from './dto';
+import { LoginDto, VerifyOtpDto } from './dto';
 import { JwtRefreshAuthGuard } from './guards';
 import { Tokens } from './types';
 
@@ -34,7 +34,6 @@ export class AuthController {
   }
 
   @Public()
-  @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('signup/admin')
   @HttpCode(HttpStatus.CREATED)
   async adminSignUp(
@@ -51,7 +50,6 @@ export class AuthController {
   }
 
   @Public()
-  @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('login/admin')
   @HttpCode(HttpStatus.OK)
   async adminLogin(@Body() dto: LoginDto): Promise<Tokens> {

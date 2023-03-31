@@ -13,16 +13,13 @@ import { Authorization } from 'src/common/decorators';
 @Authorization(Role.Admin)
 @Controller('chair')
 export class ChairController {
-  constructor(
-    private readonly chairService: ChairService,
-  ) { }
+  constructor(private readonly chairService: ChairService) {}
 
   @Public()
   @Get('health-check')
   async healthCheck() {
     return 'ok';
   }
-
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -32,9 +29,7 @@ export class ChairController {
 
 
   @Get()
-  findAll(
-    @Query() query: PaginationDefaultQuery
-  ): Promise<ChairType[]> {
+  findAll(@Query() query: PaginationDefaultQuery): Promise<ChairType[]> {
     return this.chairService.findAll(query);
   }
 
