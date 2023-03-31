@@ -5,7 +5,7 @@ export type UserType = {
 
   password?: string;
 
-  email?: string;
+  email: string;
 
   last_name?: string;
 
