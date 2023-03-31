@@ -23,19 +23,20 @@ export class MqttClientService {
 
     constructor() {
         try {
-            this.client = MQTT.connect(
-                mqttHost,
-                {
-                    username: mqttUsername,
-                    password: mqttPassword,
-                }
-            );
+            if (!this.client)
+                this.client = MQTT.connect(
+                    mqttHost,
+                    {
+                        username: mqttUsername,
+                        password: mqttPassword,
+                    }
+                );
         } catch (exc) {
             console.log(exc);
         }
     }
 
-    asyncConnection = async (): Promise<MQTT.AsyncMqttClient> => {
+    getClient = async (): Promise<MQTT.AsyncMqttClient> => {
         if (this.client)
             return this.client;
 

@@ -14,7 +14,7 @@ export class MqttService {
     }
 
     testService = async () => {
-        const connection = await this.mqtt.asyncConnection();
+        const connection = await this.mqtt.getClient();
 
         connection.on('message', (topic, message) => { console.log(topic, ': ', message.toString()) });
 
