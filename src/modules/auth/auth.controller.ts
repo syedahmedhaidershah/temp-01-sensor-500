@@ -34,6 +34,7 @@ export class AuthController {
   }
 
   @Public()
+  @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('signup/admin')
   @HttpCode(HttpStatus.CREATED)
   async adminSignUp(
@@ -50,6 +51,7 @@ export class AuthController {
   }
 
   @Public()
+  @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('login/admin')
   @HttpCode(HttpStatus.OK)
   async adminLogin(@Body() dto: LoginDto): Promise<Tokens> {
@@ -114,7 +116,6 @@ export class AuthController {
   //   return this.authService.generateAdminOtp();
   // }
 
-  @Public()
   @Post('otp/verify')
   @HttpCode(HttpStatus.OK)
   async verifyUserOtp(
@@ -123,6 +124,7 @@ export class AuthController {
     return this.authService.verifyUserOtp(verifyOtpDto);
   }
 
+  @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('otp/verify/admin')
   @HttpCode(HttpStatus.OK)
   async verifyAdminOtp(

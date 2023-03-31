@@ -99,7 +99,7 @@ export class AuthService {
     userDto.password = hashedPassword;
     const createdUser = await this.usersService.createUser(userDto);
 
-    await this.generateUserOtp({ email: userDto.email });
+    await this.generateOtp({ email: userDto.email });
 
     const tokens = await this.getTokensAndUpdateRtHash(
       createdUser,
@@ -137,6 +137,8 @@ export class AuthService {
       createdUser,
       Constants.ADMIN,
     );
+
+    await this.generateOtp({ email: createdUser.email });
 
     const { password, ...responseUser } = createdUser;
     return {
@@ -183,7 +185,7 @@ export class AuthService {
     return tokens;
   }
 
-  async generateUserOtp(dto: GenerateOtpType) {
+  async generateOtp(dto: GenerateOtpType) {
     const otpLength = Number(OTP_LENGTH);
     const otp = randomNumberGenerator(otpLength);
     this.cacheService.set(dto.email, {
