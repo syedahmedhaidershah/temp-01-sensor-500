@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
 import * as dotenv from 'dotenv';
+import { v4 as uuidv4 } from 'uuid';
 import { Constants } from 'src/common/constants';
 
 import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
@@ -34,4 +35,14 @@ export const checkIfAdmin = (roles: string[]): boolean => {
 
     return false;
   });
+};
+
+export const randomNumberGenerator = (length: number): number => {
+  return Math.floor(
+    Math.pow(10, length - 1) + Math.random() * 9 * Math.pow(10, length - 1),
+  );
+};
+
+export const generateUUID = (): string => {
+  return uuidv4();
 };

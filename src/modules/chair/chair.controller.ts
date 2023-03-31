@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { Public } from 'src/common/decorators';
 import { PaginationDefaultQuery } from 'src/common/interfaces';
 import { ChairService } from './chair.service';
 import { CreateChairDto } from './dto/create-chair.dto';
@@ -12,7 +13,16 @@ import { Authorization } from 'src/common/decorators';
 @Authorization(Role.Admin)
 @Controller('chair')
 export class ChairController {
-  constructor(private readonly chairService: ChairService) { }
+  constructor(
+    private readonly chairService: ChairService,
+  ) { }
+
+  @Public()
+  @Get('health-check')
+  async healthCheck() {
+    return 'ok';
+  }
+
 
   @Post()
   @HttpCode(HttpStatus.CREATED)

@@ -23,7 +23,6 @@ export class RefreshTokenStrategy extends PassportStrategy(
     });
   }
   async validate(req: Request, payload: JwtPayloadType) {
-    console.log('run');
     const refreshToken = req.headers['x-refresh-token'];
     return { ...payload, refreshToken };
   }
