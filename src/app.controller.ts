@@ -2,7 +2,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { Public } from './common/decorators';
 
-@Controller('test')
+@Controller('health-check')
 export class AppController {
   @Public()
   @Get()

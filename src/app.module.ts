@@ -1,5 +1,10 @@
 /** Core dependencies */
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import {
+  Module,
+  NestModule,
+  MiddlewareConsumer,
+  RequestMethod,
+} from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 
 // import { RouterModule } from '@nestjs/core';
@@ -17,12 +22,13 @@ import { MorganLoggerMiddleware } from './common/middlewares/morgan-logger/morga
 
 /** Local constants and statis */
 import EnvironmentVariables from './common/interfaces/environmentVariables';
-import { APP_GUARD } from '@nestjs/core';
-import { JwtAuthGuard } from './modules/auth/guards';
 import { ChairModule } from './modules/chair/chair.module';
 import { CheckExpiredToken } from './common/middlewares/check-expired-token';
 import { ModelsModule } from './database/mongoose';
-import { RedisCacheModule } from './modules/cache/cache.module';
+import { RouteInfo } from '@nestjs/common/interfaces';
+
+import { JwtAuthGuardProvider } from './modules/auth/guards';
+import { ResponseInterceptorProvider } from './common/interceptors';
 
 /** Local configuration and declarations */
 /** Setting up environment from env files if it exists, and environment isn't loaded */
@@ -30,16 +36,20 @@ dotenv.config();
 
 const { NODE_ENV, MONGO_URL } = process.env as EnvironmentVariables;
 
+const checkExpiredTokenRouteInfos: RouteInfo[] = [
+  { path: 'auth/(.*)', method: RequestMethod.ALL },
+  { path: 'health-check', method: RequestMethod.GET },
+];
+
 @Module({
   imports: [
     AuthModule,
     MongooseModule.forRoot(MONGO_URL),
     ModelsModule,
     ChairModule,
-    RedisCacheModule,
   ],
   controllers: [AppController],
-  providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],
+  providers: [AppService, JwtAuthGuardProvider, ResponseInterceptorProvider],
 })
 export class AppModule implements NestModule {
   /** Configuring middlewares */
@@ -47,6 +57,9 @@ export class AppModule implements NestModule {
     if (NODE_ENV === 'devlocal') {
       consumer.apply(MorganLoggerMiddleware).forRoutes('/');
     }
-    consumer.apply(CheckExpiredToken).exclude('auth/(.*)').forRoutes('*');
+    consumer
+      .apply(CheckExpiredToken)
+      .exclude(...checkExpiredTokenRouteInfos)
+      .forRoutes('*');
   }
 }

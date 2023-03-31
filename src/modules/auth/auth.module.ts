@@ -20,6 +20,8 @@ import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AccessTokenStrategy, RefreshTokenStrategy } from './strategies';
 import { ModelsModule } from 'src/database/mongoose';
+import { RedisCacheModule } from '../cache/cache.module';
+import { MailerModule } from '../mailer/mailer.module';
 
 /** Local configuration and declarations */
 // const { Models } = Sequelize;
@@ -49,6 +51,13 @@ import { ModelsModule } from 'src/database/mongoose';
 @Module({
   controllers: [AuthController],
   providers: [AuthService, AccessTokenStrategy, RefreshTokenStrategy],
-  imports: [UsersModule, PassportModule, JwtModule.register({}), ModelsModule],
+  imports: [
+    UsersModule,
+    PassportModule,
+    JwtModule.register({}),
+    ModelsModule,
+    MailerModule,
+    RedisCacheModule,
+  ],
 })
 export class AuthModule {}

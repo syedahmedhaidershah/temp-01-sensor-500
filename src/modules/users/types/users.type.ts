@@ -3,7 +3,7 @@ export type UserType = {
   _id?: string;
   username: string;
 
-  password: string;
+  password?: string;
 
   email?: string;
 
@@ -11,11 +11,15 @@ export type UserType = {
 
   first_name?: string;
 
+  is_guest?: boolean;
+
   hashed_rt?: string;
 
   deleted?: boolean;
 
   roles?: string[];
+
+  is_verified?: boolean;
 
   deleted_at?: Date;
 };

@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { UserType } from './types';
 import { hashData } from 'src/utilities';
 import { AdminUser } from 'src/database/mongoose/schemas/adminuser.schema';
+import { UserSafeType } from './types/users-safe.type';
 
 // This should be a real class/interface representing a user entity
 
@@ -16,9 +17,15 @@ export class UsersService {
     private readonly adminUserModel: Model<UserType>,
   ) {}
 
-  async createUser(userDto: UserType): Promise<UserType> {
-    const createdUser = new this.userModel(userDto);
-    return createdUser.save();
+  async createUser(userDto: UserType, options: any = {}): Promise<UserType> {
+    const { lean = true } = options;
+    const user = new this.userModel(userDto);
+    const createdUser = await user.save();
+    if (!lean) {
+      return createdUser;
+    }
+
+    return createdUser.toObject();
   }
 
   async createAdminUser(userDto: UserType): Promise<UserType> {
@@ -26,7 +33,25 @@ export class UsersService {
     return createdUser.save();
   }
 
-  async updateUser(
+  async findUserByEmailAndUpdate(
+    email: string,
+    data: Partial<UserType>,
+  ): Promise<UserSafeType> {
+    return await this.userModel
+      .findOneAndUpdate({ email }, { $set: { ...data } }, { new: true })
+      .select('-password');
+  }
+
+  async findAdminByEmailAndUpdate(
+    email: string,
+    data: Partial<UserType>,
+  ): Promise<UserSafeType> {
+    return await this.adminUserModel
+      .findOneAndUpdate({ email }, { $set: { ...data } }, { new: true })
+      .select('-password');
+  }
+
+  async findUserByIdAndUpdate(
     userId: string,
     data: Partial<UserType> | UserType,
   ): Promise<UserType> {

@@ -20,5 +20,5 @@ export class Chair {
 
 export const ChairSchema = SchemaFactory.createForClass(Chair);
 
-ChairSchema.index({ id: 1 }, { unique: true, name: 'IDX-Chair_id' });
-ChairSchema.index({ qr_code: 1 }, { unique: true, name: 'IDX-Chair_qr_code' });
+ChairSchema.index({ id: 1 }, { unique: true, name: 'IDX-Chair-id' });
+ChairSchema.index({ qr_code: 1 }, { unique: true, name: 'IDX-Chair-qr_code' });

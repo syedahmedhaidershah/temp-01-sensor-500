@@ -1,5 +1,11 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import * as dotenv from 'dotenv';
+import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
+
+dotenv.config();
+
+const { CACHE_TTL } = process.env as EnvironmentVariables;
 
 @Injectable()
 export class CacheService {
@@ -9,7 +15,11 @@ export class CacheService {
     return this.cacheManager.get(key);
   }
 
-  async set(key: string, value: any, ttl = 300): Promise<void> {
+  async set(
+    key: string,
+    value: unknown,
+    ttl = Number(CACHE_TTL),
+  ): Promise<void> {
     await this.cacheManager.set(key, value, ttl);
   }
 

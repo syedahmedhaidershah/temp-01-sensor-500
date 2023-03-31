@@ -16,4 +16,11 @@ export default interface EnvironmentVariables {
   readonly BCRYPT_SALT_ROUND?: number;
   readonly JWT_SECRET_ACCESS_TOKEN_KEY?: string;
   readonly JWT_SECRET_REFRESH_TOKEN_KEY?: string;
+  readonly SENDGRID_SENDER_EMAIL?: string;
+  readonly SENDGRID_API_KEY?: string;
+  readonly OTP_LENGTH?: number;
+  readonly CACHE_HOST?: string;
+  readonly CACHE_PORT?: number;
+  readonly CACHE_ISGLOBAL?: boolean;
+  readonly CACHE_TTL?: number;
 }
