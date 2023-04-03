@@ -50,19 +50,21 @@ export class AuthService {
     private readonly expiredTokenModel: Model<ExpiredTokenDocument>,
   ) {}
 
-  async userLogin(dto: LoginDto): Promise<Tokens> {
-    const user = await this.validateUser(dto.username, dto.password);
+  async userLogin(userDto: LoginDto): Promise<Tokens> {
+    const user = await this.validateUser(userDto.username, userDto.password);
     if (!user)
       throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+
     const tokens = await this.getTokensAndUpdateRtHash(user, Constants.USER);
 
     return tokens;
   }
 
-  async adminLogin(dto: LoginDto): Promise<Tokens> {
-    const user = await this.validateAdmin(dto.username, dto.password);
+  async adminLogin(adminDto: LoginDto): Promise<Tokens> {
+    const user = await this.validateAdmin(adminDto.username, adminDto.password);
     if (!user)
       throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+
     const tokens = await this.getTokensAndUpdateRtHash(user, Constants.ADMIN);
 
     return tokens;
@@ -115,23 +117,25 @@ export class AuthService {
   }
 
   async adminSignUp(
-    dto: UserDto,
+    adminDto: UserDto,
   ): Promise<{ user: UserSafeType; tokens: Tokens }> {
-    const isAdminRole = checkIfAdmin(dto.roles);
+    const isAdminRole = checkIfAdmin(adminDto.roles);
 
     if (!isAdminRole)
       throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
-    const admin = await this.usersService.findAdminUserByUsername(dto.username);
+    const admin = await this.usersService.findAdminUserByUsername(
+      adminDto.username,
+    );
 
     if (admin)
       throw new ForbiddenException(
         Constants.ErrorMessages.ADMIN_USERNAME_ALREADY_EXIST,
       );
 
-    const hashedPassword = await hashData(dto.password);
-    dto.password = hashedPassword;
-    const createdUser = await this.usersService.createAdminUser(dto);
+    const hashedPassword = await hashData(adminDto.password);
+    adminDto.password = hashedPassword;
+    const createdUser = await this.usersService.createAdminUser(adminDto);
 
     const tokens = await this.getTokensAndUpdateRtHash(
       createdUser,

@@ -37,23 +37,23 @@ export class AuthController {
   @Post('signup/admin')
   @HttpCode(HttpStatus.CREATED)
   async adminSignUp(
-    @Body() dto: UserDto,
+    @Body() adminDto: UserDto,
   ): Promise<{ user: Omit<UserType, 'password'>; tokens: Tokens }> {
-    return this.authService.adminSignUp(dto);
+    return this.authService.adminSignUp(adminDto);
   }
 
   @Public()
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  async userLogin(@Body() dto: LoginDto): Promise<Tokens> {
-    return this.authService.userLogin(dto);
+  async userLogin(@Body() userDto: LoginDto): Promise<Tokens> {
+    return this.authService.userLogin(userDto);
   }
 
   @Public()
   @Post('login/admin')
   @HttpCode(HttpStatus.OK)
-  async adminLogin(@Body() dto: LoginDto): Promise<Tokens> {
-    return this.authService.adminLogin(dto);
+  async adminLogin(@Body() adminDto: LoginDto): Promise<Tokens> {
+    return this.authService.adminLogin(adminDto);
   }
 
   @Post('logout')

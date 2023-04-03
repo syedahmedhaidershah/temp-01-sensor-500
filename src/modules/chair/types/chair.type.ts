@@ -1,14 +1,11 @@
-
-import { ChairStates } from "src/common/enums";
+import { ChairStates } from 'src/common/enums';
 
 export type ChairType = {
+  id: string;
 
-    id: string;
+  battery: number;
 
-    battery: number;
+  state: ChairStates;
 
-    state: ChairStates;
-
-    qr_code: string;
-
+  qr_code: string;
 };

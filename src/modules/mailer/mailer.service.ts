@@ -5,7 +5,7 @@ import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
 
 dotenv.config();
 
-const { SENDGRID_SENDER_EMAIL, SENDGRID_API_KEY } =
+const { SENDGRID_SENDER_EMAIL, SENDGRID_API_KEY, SENDGRID_TEMPLATE_ID } =
   process.env as EnvironmentVariables;
 
 @Injectable()
@@ -22,7 +22,7 @@ export class MailerService {
       to,
       from: SENDGRID_SENDER_EMAIL,
       subject,
-      templateId: 'd-021164b62a7f4f29888570a3b023f339',
+      templateId: SENDGRID_TEMPLATE_ID,
       dynamicTemplateData: {
         otp,
       },
@@ -30,7 +30,7 @@ export class MailerService {
     try {
       await this.mailService.send(message);
     } catch (err) {
-      console.log(err.response.body);
+      throw new Error(err.response.body?.message);
     }
   }
 }

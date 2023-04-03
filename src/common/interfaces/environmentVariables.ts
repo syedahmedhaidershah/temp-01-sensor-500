@@ -18,6 +18,7 @@ export default interface EnvironmentVariables {
   readonly JWT_SECRET_REFRESH_TOKEN_KEY?: string;
   readonly SENDGRID_SENDER_EMAIL?: string;
   readonly SENDGRID_API_KEY?: string;
+  readonly SENDGRID_TEMPLATE_ID?: string;
   readonly OTP_LENGTH?: number;
   readonly CACHE_HOST?: string;
   readonly CACHE_PORT?: number;
