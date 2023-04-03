@@ -28,10 +28,7 @@ export class UsersService {
     return createdUser.toObject();
   }
 
-  async createAdminUser(
-    userDto: UserType,
-    options: any = {},
-  ): Promise<UserType> {
+  async createAdminUser(userDto: UserType, options: any = {}): Promise<UserType> {
     const { lean = true } = options;
 
     const admin = new this.adminUserModel(userDto);
@@ -44,19 +41,13 @@ export class UsersService {
     return createdAdmin.toObject();
   }
 
-  async findUserByEmailAndUpdate(
-    email: string,
-    data: Partial<UserType>,
-  ): Promise<UserSafeType> {
+  async findUserByEmailAndUpdate(email: string, data: Partial<UserType>): Promise<UserSafeType> {
     return await this.userModel
       .findOneAndUpdate({ email }, { $set: { ...data } }, { new: true })
       .select('-password');
   }
 
-  async findAdminByEmailAndUpdate(
-    email: string,
-    data: Partial<UserType>,
-  ): Promise<UserSafeType> {
+  async findAdminByEmailAndUpdate(email: string, data: Partial<UserType>): Promise<UserSafeType> {
     return await this.adminUserModel
       .findOneAndUpdate({ email }, { $set: { ...data } }, { new: true })
       .select('-password');
@@ -69,13 +60,8 @@ export class UsersService {
     return this.userModel.findByIdAndUpdate(userId, data, { new: true }).exec();
   }
 
-  async updateAdminUser(
-    userId: string,
-    data: Partial<UserType> | UserType,
-  ): Promise<UserType> {
-    return this.adminUserModel
-      .findByIdAndUpdate(userId, data, { new: true })
-      .exec();
+  async updateAdminUser(userId: string, data: Partial<UserType> | UserType): Promise<UserType> {
+    return this.adminUserModel.findByIdAndUpdate(userId, data, { new: true }).exec();
   }
 
   async findUserById(userID: string): Promise<UserType | undefined> {
@@ -93,9 +79,7 @@ export class UsersService {
     return user;
   }
 
-  async findAdminUserByUsername(
-    username: string,
-  ): Promise<UserType | undefined> {
+  async findAdminUserByUsername(username: string): Promise<UserType | undefined> {
     const user = await this.adminUserModel.findOne({ username }).exec();
     return user;
   }
@@ -111,19 +95,11 @@ export class UsersService {
 
   async logoutUser(userId: string): Promise<void> {
     const filter = { _id: userId, hashed_rt: { $ne: null } };
-    await this.userModel.findByIdAndUpdate(
-      filter,
-      { hashed_rt: null },
-      { new: true },
-    );
+    await this.userModel.findByIdAndUpdate(filter, { hashed_rt: null }, { new: true });
   }
 
   async logoutAdminUser(userId: string): Promise<void> {
     const filter = { _id: userId, hashed_rt: { $ne: null } };
-    await this.adminUserModel.findByIdAndUpdate(
-      filter,
-      { hashed_rt: null },
-      { new: true },
-    );
+    await this.adminUserModel.findByIdAndUpdate(filter, { hashed_rt: null }, { new: true });
   }
 }

@@ -33,11 +33,8 @@ import { UserSafeType } from '../users/types/users-safe.type';
 
 dotenv.config();
 
-const {
-  JWT_SECRET_ACCESS_TOKEN_KEY,
-  JWT_SECRET_REFRESH_TOKEN_KEY,
-  OTP_LENGTH,
-} = process.env as EnvironmentVariables;
+const { JWT_SECRET_ACCESS_TOKEN_KEY, JWT_SECRET_REFRESH_TOKEN_KEY, OTP_LENGTH } =
+  process.env as EnvironmentVariables;
 
 @Injectable()
 export class AuthService {
@@ -50,37 +47,40 @@ export class AuthService {
     private readonly expiredTokenModel: Model<ExpiredTokenDocument>,
   ) {}
 
-  async userLogin(userDto: LoginDto): Promise<Tokens> {
+  async userLogin(userDto: LoginDto): Promise<{ user: UserSafeType; tokens: Tokens }> {
     const user = await this.validateUser(userDto.username, userDto.password);
-    if (!user)
-      throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    if (!user) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
     const tokens = await this.getTokensAndUpdateRtHash(user, Constants.USER);
 
-    return tokens;
+    const { password, ...responseUser } = user;
+
+    return {
+      user: responseUser,
+      tokens,
+    };
   }
 
-  async adminLogin(adminDto: LoginDto): Promise<Tokens> {
+  async adminLogin(adminDto: LoginDto): Promise<{ user: UserSafeType; tokens: Tokens }> {
     const user = await this.validateAdmin(adminDto.username, adminDto.password);
-    if (!user)
-      throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    if (!user) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
     const tokens = await this.getTokensAndUpdateRtHash(user, Constants.ADMIN);
 
-    return tokens;
+    const { password, ...responseUser } = user;
+
+    return {
+      user: responseUser,
+      tokens,
+    };
   }
 
-  async userSignUp(
-    userDto: UserDto,
-  ): Promise<{ user: UserSafeType; tokens: Tokens }> {
+  async userSignUp(userDto: UserDto): Promise<{ user: UserSafeType; tokens: Tokens }> {
     /** If user is guest generate random id for user and return tokens */
     if (userDto.is_guest) {
       userDto.username = generateUUID();
       const createdUser = await this.usersService.createUser(userDto);
-      const tokens = await this.getTokensAndUpdateRtHash(
-        createdUser,
-        Constants.USER,
-      );
+      const tokens = await this.getTokensAndUpdateRtHash(createdUser, Constants.USER);
 
       const { password, ...responseUser } = createdUser;
 
@@ -92,10 +92,7 @@ export class AuthService {
 
     /** If user is not guest check if user exist, if exist throw error else create new user */
     const user = await this.usersService.findUserByUsername(userDto.username);
-    if (user)
-      throw new ForbiddenException(
-        Constants.ErrorMessages.USER_USERNAME_ALREADY_EXIST,
-      );
+    if (user) throw new ForbiddenException(Constants.ErrorMessages.USER_USERNAME_ALREADY_EXIST);
 
     const hashedPassword = await hashData(userDto.password);
     userDto.password = hashedPassword;
@@ -103,10 +100,7 @@ export class AuthService {
 
     await this.generateOtp({ email: userDto.email });
 
-    const tokens = await this.getTokensAndUpdateRtHash(
-      createdUser,
-      Constants.USER,
-    );
+    const tokens = await this.getTokensAndUpdateRtHash(createdUser, Constants.USER);
 
     const { password, ...responseUser } = createdUser;
 
@@ -116,31 +110,20 @@ export class AuthService {
     };
   }
 
-  async adminSignUp(
-    adminDto: UserDto,
-  ): Promise<{ user: UserSafeType; tokens: Tokens }> {
+  async adminSignUp(adminDto: UserDto): Promise<{ user: UserSafeType; tokens: Tokens }> {
     const isAdminRole = checkIfAdmin(adminDto.roles);
 
-    if (!isAdminRole)
-      throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    if (!isAdminRole) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
-    const admin = await this.usersService.findAdminUserByUsername(
-      adminDto.username,
-    );
+    const admin = await this.usersService.findAdminUserByUsername(adminDto.username);
 
-    if (admin)
-      throw new ForbiddenException(
-        Constants.ErrorMessages.ADMIN_USERNAME_ALREADY_EXIST,
-      );
+    if (admin) throw new ForbiddenException(Constants.ErrorMessages.ADMIN_USERNAME_ALREADY_EXIST);
 
     const hashedPassword = await hashData(adminDto.password);
     adminDto.password = hashedPassword;
     const createdUser = await this.usersService.createAdminUser(adminDto);
 
-    const tokens = await this.getTokensAndUpdateRtHash(
-      createdUser,
-      Constants.ADMIN,
-    );
+    const tokens = await this.getTokensAndUpdateRtHash(createdUser, Constants.ADMIN);
 
     await this.generateOtp({ email: createdUser.email });
 
@@ -169,8 +152,7 @@ export class AuthService {
       throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
     const rtMatches = await compareHashed(rt, user.hashed_rt);
-    if (!rtMatches)
-      throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    if (!rtMatches) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
     const tokens = await this.getTokensAndUpdateRtHash(user, Constants.USER);
     return tokens;
@@ -182,8 +164,7 @@ export class AuthService {
       throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
     const rtMatches = await compareHashed(rt, user.hashed_rt);
-    if (!rtMatches)
-      throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    if (!rtMatches) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
     const tokens = await this.getTokensAndUpdateRtHash(user, Constants.ADMIN);
     return tokens;
@@ -214,12 +195,9 @@ export class AuthService {
     }
     if (otp === getOtpDetails.otp) {
       this.cacheService.delete(email);
-      const updatedUser = await this.usersService.findUserByEmailAndUpdate(
-        email,
-        {
-          is_verified: true,
-        },
-      );
+      const updatedUser = await this.usersService.findUserByEmailAndUpdate(email, {
+        is_verified: true,
+      });
       return updatedUser;
     } else {
       getOtpDetails.otpRetries = getOtpDetails.otpRetries + 1;
@@ -241,12 +219,9 @@ export class AuthService {
     }
     if (otp === getOtpDetails.otp) {
       this.cacheService.delete(email);
-      const updatedAdmin = await this.usersService.findAdminByEmailAndUpdate(
-        email,
-        {
-          is_verified: true,
-        },
-      );
+      const updatedAdmin = await this.usersService.findAdminByEmailAndUpdate(email, {
+        is_verified: true,
+      });
       return updatedAdmin;
     } else {
       getOtpDetails.otpRetries = getOtpDetails.otpRetries + 1;
@@ -265,29 +240,20 @@ export class AuthService {
     if (!user) throw new NotFoundException('No User Found');
     const passwordMatches = await compareHashed(pass, user.password);
 
-    if (!passwordMatches)
-      throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    if (!passwordMatches) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
     return user;
   }
 
-  async validateAdmin(
-    username: string,
-    pass: string,
-  ): Promise<UserType | null> {
+  async validateAdmin(username: string, pass: string): Promise<UserType | null> {
     const user = await this.usersService.findAdminUserByUsername(username);
-    if (!user)
-      throw new NotFoundException(Constants.ErrorMessages.NO_USER_FOUND);
+    if (!user) throw new NotFoundException(Constants.ErrorMessages.NO_USER_FOUND);
     const passwordMatches = await compareHashed(pass, user.password);
 
-    if (!passwordMatches)
-      throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    if (!passwordMatches) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
     return user;
   }
 
-  async getTokensAndUpdateRtHash(
-    user: UserType,
-    role: string,
-  ): Promise<Tokens> {
+  async getTokensAndUpdateRtHash(user: UserType, role: string): Promise<Tokens> {
     const { username, _id, roles } = user;
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(
