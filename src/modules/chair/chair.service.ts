@@ -1,14 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { Chair } from 'src/database/mongoose/schemas';
 import { CreateChairDto } from './dto/create-chair.dto';
 import { UpdateChairDto } from './dto/update-chair.dto';
-import { ChairType } from './types';
+import { ChairType, PartialChairType } from './types';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  PaginationDefaultQuery,
-  PaginationDefaultQueryOptions,
-} from 'src/common/interfaces';
+import { PaginationDefaultQuery, PaginationDefaultQueryOptions } from 'src/common/interfaces';
+import { ChairStates } from 'src/common/enums';
+import { Constants } from 'src/common/constants';
 
 @Injectable()
 export class ChairService {
@@ -61,13 +60,92 @@ export class ChairService {
     return updatedChair || null;
   }
 
-  async remove(id: string): Promise<boolean> {
-    const deletedChair = await this.chairModel.findByIdAndDelete(id);
-    return Boolean(deletedChair);
+  async remove(id: string): Promise<void> {
+    return await this.chairModel.findByIdAndDelete(id);
+     
   }
 
   async findById(id: string): Promise<ChairType | null> {
     const found = await this.chairModel.findOne({ id: id });
     return found || null;
   }
+
+  async updateChairState(id: string,options:any): Promise<ChairType | null> {
+    const found = await this.chairModel.findOne({ _id:id });
+    if(options.acceptedStates.includes(found.state)){
+      const chair = await this.chairModel.findByIdAndUpdate(id, {
+        state: options.stateToSet
+      }, { new: true });
+      return chair;
+    }
+    throw new NotAcceptableException(Constants.ErrorMessages.CHAIR_UPDATE_DENIED);
+  }
+
+  async updateChairStateToOnline(id:string):Promise<PartialChairType>{
+    return await this.updateChairState(
+      id,
+      {
+        acceptedStates:[ChairStates.Offline,ChairStates.Reserved,ChairStates.TemporarilyDefective,ChairStates.Defective]
+        ,
+        stateToSet: ChairStates.Online
+      }
+    )
+  }
+
+  async updateChairStateToOffline(id:string):Promise<PartialChairType>{
+    return await this.updateChairState(
+      id,
+      {
+        acceptedStates:[ChairStates.Online]
+        ,
+        stateToSet: ChairStates.Offline
+      }
+    )
+  }
+
+
+  async updateChairStateToReserved(id:string):Promise<PartialChairType>{
+    return await this.updateChairState(
+      id,
+      {
+        acceptedStates:[ChairStates.Online,ChairStates.TemporarilyDefective,ChairStates.Opened]
+        ,
+        stateToSet: ChairStates.Reserved
+      }
+    )
+  }
+
+  async updateChairStateToOpened(id:string):Promise<PartialChairType>{
+    return await this.updateChairState(
+      id,
+      {
+        acceptedStates:[ChairStates.Reserved]
+        ,
+        stateToSet: ChairStates.Opened
+      }
+    )
+  }
+
+  async updateChairStateToDefect(id:string):Promise<PartialChairType>{
+    return await this.updateChairState(
+      id,
+      {
+        acceptedStates:[ChairStates.Online,ChairStates.TemporarilyDefective]
+        ,
+        stateToSet: ChairStates.Defective
+      }
+    )
+  }
+
+  async updateChairStateToTemporarilyDefective(id:string):Promise<PartialChairType>{
+    return await this.updateChairState(
+      id,
+      {
+        acceptedStates:[ChairStates.Reserved]
+        ,
+        stateToSet: ChairStates.TemporarilyDefective
+      }
+    )
+  }
+  
 }
