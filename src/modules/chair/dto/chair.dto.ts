@@ -16,9 +16,9 @@ import {
     @IsNotEmpty()
     battery: number;
 
-    @IsEnum(ChairStates)
     @IsNotEmpty()
-    state: string;
+    @IsEnum(ChairStates)
+    state: ChairStates;
 
     @IsString()
     @IsNotEmpty()
