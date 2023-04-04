@@ -2,13 +2,11 @@ import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { Chair } from 'src/database/mongoose/schemas';
 import { CreateChairDto } from './dto/create-chair.dto';
 import { UpdateChairDto } from './dto/update-chair.dto';
-import { UpdateChairStateDto } from './dto/update-chair-state.dto';
 import { ChairType, PartialChairType } from './types';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { PaginationDefaultQuery, PaginationDefaultQueryOptions } from 'src/common/interfaces';
 import { ChairStates } from 'src/common/enums';
-import { constants } from 'buffer';
 import { Constants } from 'src/common/constants';
 
 @Injectable()
