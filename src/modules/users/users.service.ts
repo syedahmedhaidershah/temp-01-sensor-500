@@ -75,13 +75,13 @@ export class UsersService {
   }
 
   async findUserByUsername(username: string): Promise<UserType | undefined> {
-    const user = await this.userModel.findOne({ username }).exec();
-    return user;
+    const user = await this.userModel.findOne({ username }, { hashed_rt: 0 }).exec();
+    return user.toObject();
   }
 
   async findAdminUserByUsername(username: string): Promise<UserType | undefined> {
-    const user = await this.adminUserModel.findOne({ username }).exec();
-    return user;
+    const user = await this.adminUserModel.findOne({ username }, { hashed_rt: 0 }).exec();
+    return user.toObject();
   }
 
   async updateUserRtHash(id: string, rt: string): Promise<void> {

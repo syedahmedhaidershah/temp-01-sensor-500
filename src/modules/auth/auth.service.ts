@@ -17,7 +17,7 @@ import { UserDto } from '../users/dto';
 import { UserType } from '../users/types';
 import { UsersService } from '../users/users.service';
 import { LoginDto, VerifyOtpDto } from './dto';
-import { GenerateOtpType, Tokens, VerifyOtpType } from './types';
+import { GenerateOtpType, SafeUserTokenType, Tokens, VerifyOtpType } from './types';
 import * as dotenv from 'dotenv';
 import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
 import { InjectModel } from '@nestjs/mongoose';
@@ -47,7 +47,7 @@ export class AuthService {
     private readonly expiredTokenModel: Model<ExpiredTokenDocument>,
   ) {}
 
-  async userLogin(userDto: LoginDto): Promise<{ user: UserSafeType; tokens: Tokens }> {
+  async userLogin(userDto: LoginDto): Promise<SafeUserTokenType> {
     const user = await this.validateUser(userDto.username, userDto.password);
     if (!user) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
@@ -61,7 +61,7 @@ export class AuthService {
     };
   }
 
-  async adminLogin(adminDto: LoginDto): Promise<{ user: UserSafeType; tokens: Tokens }> {
+  async adminLogin(adminDto: LoginDto): Promise<SafeUserTokenType> {
     const user = await this.validateAdmin(adminDto.username, adminDto.password);
     if (!user) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
