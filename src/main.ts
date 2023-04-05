@@ -18,7 +18,7 @@ async function bootstrap() {
   /** Configurations and declarations */
   let { ENABLE_ALL_ORIGINS = 'false' } = process.env as EnvironmentVariables;
 
-  const { PORT } = process.env as EnvironmentVariables;
+  const { PORT, API_PREFIX } = process.env as EnvironmentVariables;
   ENABLE_ALL_ORIGINS = JSON.parse(ENABLE_ALL_ORIGINS as string);
 
   /** Configuring runtime and bootstrapping */
@@ -31,6 +31,7 @@ async function bootstrap() {
     //   logger: ['error', 'debug', 'verbose'],
     // },
   );
+  app.setGlobalPrefix(API_PREFIX);
   app.useGlobalPipes(new ValidationPipe());
   app.use(helmet());
 
