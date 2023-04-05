@@ -27,5 +27,5 @@ export default interface EnvironmentVariables {
   readonly MQTT_HOST?: string;
   readonly MQTT_USERNAME?: string;
   readonly MQTT_PASSWORD?: string;
-  readonly API_PREFIX?: string;
+  readonly API_BASE?: string;
 }
