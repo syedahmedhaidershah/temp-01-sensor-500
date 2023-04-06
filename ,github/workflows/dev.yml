@@ -1,0 +1,29 @@
+# Github Action for triggering script on EC2 machine for deployments
+
+name: CI-Development
+
+on:
+  push:
+    branches: [dev]
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+ 
+      - name: Running build
+        uses: appleboy/ssh-action@v0.1.8
+        with:
+          host: ${{secrets.DEV_HOST}}
+          key: ${{secrets.DEV_SSH_PRIVATE_KEY}}
+          username: ${{secrets.DEV_SSH_USERNAME}}
+          port: 22
+          script: ${{secrets.DEV_APP_ROOT}}/backend-dev.sh
+
