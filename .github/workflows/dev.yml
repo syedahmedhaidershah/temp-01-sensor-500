@@ -25,5 +25,5 @@ jobs:
           key: ${{secrets.DEV_SSH_PRIVATE_KEY}}
           username: ${{secrets.DEV_SSH_USERNAME}}
           port: 22
-          script: /var/www/gf/backend-dev.sh
+          script: ${{secrets.DEV_APP_ROOT}}/backend-dev.sh
 
