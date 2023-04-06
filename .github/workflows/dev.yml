@@ -20,7 +20,7 @@ jobs:
  
       - name: Running build
         uses: appleboy/ssh-action@v0.1.8
-        with
+        with:
           host: ${{secrets.DEV_HOST}}
           key: ${{secrets.DEV_SSH_PRIVATE_KEY}}
           username: ${{secrets.DEV_SSH_USERNAME}}
