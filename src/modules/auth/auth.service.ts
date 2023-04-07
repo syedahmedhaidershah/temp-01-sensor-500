@@ -75,7 +75,7 @@ export class AuthService {
     };
   }
 
-  async userSignUp(userDto: UserDto): Promise<{ user: UserSafeType; tokens: Tokens }> {
+  async userSignUp(userDto: UserDto): Promise<SafeUserTokenType> {
     /** If user is guest generate random id for user and return tokens */
     if (userDto.is_guest) {
       userDto.username = generateUUID();
@@ -110,7 +110,7 @@ export class AuthService {
     };
   }
 
-  async adminSignUp(adminDto: UserDto): Promise<{ user: UserSafeType; tokens: Tokens }> {
+  async adminSignUp(adminDto: UserDto): Promise<SafeUserTokenType> {
     const isAdminRole = checkIfAdmin(adminDto.roles);
 
     if (!isAdminRole) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
