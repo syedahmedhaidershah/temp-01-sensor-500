@@ -148,10 +148,10 @@ export class AuthService {
 
   async refreshUserTokens(userId: string, rt: string): Promise<Tokens> {
     const user = await this.usersService.findUserById(userId);
-    if (!user || !user.hashed_rt)
+    if (!user || !user.hashed_refreshtoken)
       throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
-    const rtMatches = await compareHashed(rt, user.hashed_rt);
+    const rtMatches = await compareHashed(rt, user.hashed_refreshtoken);
     if (!rtMatches) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
     const tokens = await this.getTokensAndUpdateRtHash(user, Constants.USER);
@@ -160,10 +160,10 @@ export class AuthService {
 
   async refreshAdminTokens(userId: string, rt: string): Promise<Tokens> {
     const user = await this.usersService.findAdminUserById(userId);
-    if (!user || !user.hashed_rt)
+    if (!user || !user.hashed_refreshtoken)
       throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
-    const rtMatches = await compareHashed(rt, user.hashed_rt);
+    const rtMatches = await compareHashed(rt, user.hashed_refreshtoken);
     if (!rtMatches) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
 
     const tokens = await this.getTokensAndUpdateRtHash(user, Constants.ADMIN);

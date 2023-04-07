@@ -75,31 +75,35 @@ export class UsersService {
   }
 
   async findUserByUsername(username: string): Promise<UserType | undefined> {
-    const user = await this.userModel.findOne({ username }, { hashed_rt: 0 }).exec();
+    const user = await this.userModel.findOne({ username }, { hashed_refreshtoken: 0 }).exec();
     return user.toObject();
   }
 
   async findAdminUserByUsername(username: string): Promise<UserType | undefined> {
-    const user = await this.adminUserModel.findOne({ username }, { hashed_rt: 0 }).exec();
+    const user = await this.adminUserModel.findOne({ username }, { hashed_refreshtoken: 0 }).exec();
     return user.toObject();
   }
 
   async updateUserRtHash(id: string, rt: string): Promise<void> {
     const hashedRt = await hashData(rt);
-    await this.userModel.findByIdAndUpdate(id, { hashed_rt: hashedRt });
+    await this.userModel.findByIdAndUpdate(id, { hashed_refreshtoken: hashedRt });
   }
   async updateAdminRtHash(id: string, rt: string): Promise<void> {
     const hashedRt = await hashData(rt);
-    await this.adminUserModel.findByIdAndUpdate(id, { hashed_rt: hashedRt });
+    await this.adminUserModel.findByIdAndUpdate(id, { hashed_refreshtoken: hashedRt });
   }
 
   async logoutUser(userId: string): Promise<void> {
-    const filter = { _id: userId, hashed_rt: { $ne: null } };
-    await this.userModel.findByIdAndUpdate(filter, { hashed_rt: null }, { new: true });
+    const filter = { _id: userId, hashed_refreshtoken: { $ne: null } };
+    await this.userModel.findByIdAndUpdate(filter, { hashed_refreshtoken: null }, { new: true });
   }
 
   async logoutAdminUser(userId: string): Promise<void> {
-    const filter = { _id: userId, hashed_rt: { $ne: null } };
-    await this.adminUserModel.findByIdAndUpdate(filter, { hashed_rt: null }, { new: true });
+    const filter = { _id: userId, hashed_refreshtoken: { $ne: null } };
+    await this.adminUserModel.findByIdAndUpdate(
+      filter,
+      { hashed_refreshtoken: null },
+      { new: true },
+    );
   }
 }

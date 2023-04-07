@@ -35,22 +35,16 @@ export class User {
   roles?: string[];
 
   @Prop()
-  hashed_rt?: string;
+  hashed_refreshtoken?: string;
 
   @Prop()
   deleted_at?: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-UserSchema.index(
-  { username: 1 },
-  { name: 'IDX-User-username', unique: true, sparse: true },
-);
+UserSchema.index({ username: 1 }, { name: 'IDX-User-username', unique: true, sparse: true });
 
-UserSchema.index(
-  { email: 1 },
-  { name: 'IDX-User-email', unique: true, sparse: true },
-);
+UserSchema.index({ email: 1 }, { name: 'IDX-User-email', unique: true, sparse: true });
 
 UserSchema.index(
   { phone_number: 1 },

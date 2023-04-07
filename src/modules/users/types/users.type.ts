@@ -13,7 +13,7 @@ export type UserType = {
 
   is_guest?: boolean;
 
-  hashed_rt?: string;
+  hashed_refreshtoken?: string;
 
   deleted?: boolean;
 
