@@ -18,7 +18,8 @@ export const Constants = {
     OTP_EXPIRED: 'OTP Expired',
     INCORRECT_OTP: 'Incorrect OTP provided. Please input correct OTP.',
     NO_USER_FOUND: 'No user found.',
-    CHAIR_UPDATE_DENIED:'This action can`t be performed for this chair state'
+    CHAIR_UPDATE_DENIED: 'This action can`t be performed for this chair state',
+    EMAIL_NOT_FOUND: 'Email not found',
   },
   OmitProperties: {
     PASSWORD: 'password',

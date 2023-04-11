@@ -170,7 +170,23 @@ export class AuthService {
     return tokens;
   }
 
-  async generateOtp(dto: GenerateOtpType) {
+  async forgotUserPassword(generateOtpDto: GenerateOtpType): Promise<void> {
+    const { email } = generateOtpDto;
+    const user = await this.usersService.findUserByEmail(email);
+    if (!user) throw new ForbiddenException(Constants.ErrorMessages.EMAIL_NOT_FOUND);
+
+    await this.generateOtp({ email });
+  }
+
+  async forgotAdminPassword(generateOtpDto: GenerateOtpType): Promise<void> {
+    const { email } = generateOtpDto;
+    const user = await this.usersService.findAdminUserByEmail(email);
+    if (!user) throw new ForbiddenException(Constants.ErrorMessages.EMAIL_NOT_FOUND);
+
+    await this.generateOtp({ email });
+  }
+
+  async generateOtp(dto: GenerateOtpType): Promise<void> {
     const otpLength = Number(OTP_LENGTH);
     const otp = randomNumberGenerator(otpLength);
     this.cacheService.set(dto.email, {
@@ -179,7 +195,27 @@ export class AuthService {
     });
 
     await this.mailerService.sendEmail(dto.email, Constants.EMAIL_SUBJECT, otp);
-    return otp;
+  }
+
+  async validateOtp(verifyOtpDto: VerifyOtpDto): Promise<void> {
+    const { email, otp } = verifyOtpDto;
+    const getOtpDetails: VerifyOtpType = await this.cacheService.get(email);
+    if (!getOtpDetails) {
+      throw new NotAcceptableException(Constants.ErrorMessages.INVALID_EMAIL);
+    }
+    if (otp === getOtpDetails.otp) {
+      this.cacheService.delete(email);
+      return;
+    } else {
+      getOtpDetails.otpRetries = getOtpDetails.otpRetries + 1;
+      this.cacheService.set(email, getOtpDetails);
+      if (getOtpDetails.otpRetries === 3) {
+        this.cacheService.delete(email);
+        throw new GoneException(Constants.ErrorMessages.OTP_EXPIRED);
+      } else {
+        throw new NotAcceptableException(Constants.ErrorMessages.INCORRECT_OTP);
+      }
+    }
   }
 
   //** Will be removed */
