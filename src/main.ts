@@ -16,15 +16,14 @@ async function bootstrap() {
   /** Setting up environment from env files if it exists */
 
   /** Configurations and declarations */
-  let { ENABLE_ALL_ORIGINS = 'false' } = process.env as EnvironmentVariables;
 
-  const { PORT, API_BASE } = process.env as EnvironmentVariables;
-  ENABLE_ALL_ORIGINS = JSON.parse(ENABLE_ALL_ORIGINS as string);
+  const { PORT, API_BASE, ENABLE_ALL_ORIGINS = 'true' } = process.env as EnvironmentVariables;
+  const ENABLE_ALL_ORIGINS_BOOL = ENABLE_ALL_ORIGINS === 'true';
 
   /** Configuring runtime and bootstrapping */
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
-
+    { cors: ENABLE_ALL_ORIGINS_BOOL },
     //* User for fastify integration
     // new FastifyAdapter(),
     // {
@@ -34,8 +33,6 @@ async function bootstrap() {
   app.setGlobalPrefix(API_BASE);
   app.useGlobalPipes(new ValidationPipe());
   app.use(helmet());
-
-  if (ENABLE_ALL_ORIGINS) return await app.listen(PORT, '0.0.0.0');
 
   return await app.listen(PORT);
 }
