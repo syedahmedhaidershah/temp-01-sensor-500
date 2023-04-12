@@ -22,7 +22,7 @@ export default interface EnvironmentVariables {
   readonly OTP_LENGTH?: number;
   readonly CACHE_HOST?: string;
   readonly CACHE_PORT?: number;
-  readonly CACHE_ISGLOBAL?: boolean;
+  readonly CACHE_ISGLOBAL?: BooleanString | string;
   readonly CACHE_TTL?: number;
   readonly MQTT_HOST?: string;
   readonly MQTT_USERNAME?: string;
