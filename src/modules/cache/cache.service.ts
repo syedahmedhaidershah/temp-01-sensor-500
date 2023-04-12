@@ -5,11 +5,16 @@ import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
 
 dotenv.config();
 
-const { CACHE_TTL } = process.env as EnvironmentVariables;
+const {
+  // 300,000 milliseconds == 5 minutes
+  CACHE_TTL = 300000
+} = process.env as EnvironmentVariables;
 
 @Injectable()
 export class CacheService {
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
+  ) { }
 
   async get(key: string): Promise<any> {
     return this.cacheManager.get(key);
@@ -25,5 +30,11 @@ export class CacheService {
 
   async delete(key: string): Promise<void> {
     await this.cacheManager.del(key);
+  }
+
+
+  /** Flushes / resets the cache */
+  async flush() {
+    await this.cacheManager.reset();
   }
 }
