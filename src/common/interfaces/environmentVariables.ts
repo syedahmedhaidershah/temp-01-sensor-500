@@ -2,7 +2,7 @@ import { BooleanString } from '../enums';
 
 export default interface EnvironmentVariables {
   readonly NODE_ENV?: string;
-  readonly ENABLE_ALL_ORIGINS?: string;
+  readonly ENABLE_ALL_ORIGINS?: BooleanString | string;
   readonly PORT?: number;
   readonly MYSQL_ENABLED?: BooleanString | string;
   readonly MYSQL_HOST?: string;
@@ -22,7 +22,7 @@ export default interface EnvironmentVariables {
   readonly OTP_LENGTH?: number;
   readonly CACHE_HOST?: string;
   readonly CACHE_PORT?: number;
-  readonly CACHE_ISGLOBAL?: string;
+  readonly CACHE_ISGLOBAL?: BooleanString | string;
   readonly CACHE_TTL?: number;
   readonly MQTT_HOST?: string;
   readonly MQTT_USERNAME?: string;

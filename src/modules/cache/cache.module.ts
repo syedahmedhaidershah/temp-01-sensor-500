@@ -7,7 +7,7 @@ import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
 dotenv.config();
 
 const { CACHE_HOST, CACHE_ISGLOBAL, CACHE_PORT } = process.env as EnvironmentVariables;
-const CACHE_ISGLOBAL_BOOL = CACHE_ISGLOBAL === 'true';
+const CACHE_ISGLOBAL_BOOL = JSON.parse(CACHE_ISGLOBAL as string);
 @Module({
   imports: [
     CacheModule.register({

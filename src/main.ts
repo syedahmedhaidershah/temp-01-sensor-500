@@ -18,7 +18,7 @@ async function bootstrap() {
   /** Configurations and declarations */
 
   const { PORT, API_BASE, ENABLE_ALL_ORIGINS = 'true' } = process.env as EnvironmentVariables;
-  const ENABLE_ALL_ORIGINS_BOOL = ENABLE_ALL_ORIGINS === 'true';
+  const ENABLE_ALL_ORIGINS_BOOL = JSON.parse(ENABLE_ALL_ORIGINS as string);
 
   /** Configuring runtime and bootstrapping */
   const app = await NestFactory.create<NestExpressApplication>(
