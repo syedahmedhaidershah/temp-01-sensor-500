@@ -28,4 +28,5 @@ export const Constants = {
   ADMIN: 'admin',
   USER: 'user',
   EMAIL_SUBJECT: 'Verify Email Address',
+  RESET_PASSWORD: 'Reset Your Password',
 };

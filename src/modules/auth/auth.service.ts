@@ -98,7 +98,7 @@ export class AuthService {
     userDto.password = hashedPassword;
     const createdUser = await this.usersService.createUser(userDto);
 
-    await this.generateOtp({ email: userDto.email });
+    await this.generateOtp({ email: userDto.email, subject: Constants.EMAIL_SUBJECT });
 
     const tokens = await this.getTokensAndUpdateRtHash(createdUser, Constants.USER);
 
@@ -125,7 +125,7 @@ export class AuthService {
 
     const tokens = await this.getTokensAndUpdateRtHash(createdUser, Constants.ADMIN);
 
-    await this.generateOtp({ email: createdUser.email });
+    await this.generateOtp({ email: createdUser.email, subject: Constants.EMAIL_SUBJECT });
 
     const { password, ...responseUser } = createdUser;
     return {
@@ -175,7 +175,7 @@ export class AuthService {
     const user = await this.usersService.findUserByEmail(email);
     if (!user) throw new ForbiddenException(Constants.ErrorMessages.EMAIL_NOT_FOUND);
 
-    await this.generateOtp({ email });
+    await this.generateOtp({ email, subject: Constants.RESET_PASSWORD });
   }
 
   async forgotAdminPassword(generateOtpDto: GenerateOtpType): Promise<void> {
@@ -183,7 +183,7 @@ export class AuthService {
     const user = await this.usersService.findAdminUserByEmail(email);
     if (!user) throw new ForbiddenException(Constants.ErrorMessages.EMAIL_NOT_FOUND);
 
-    await this.generateOtp({ email });
+    await this.generateOtp({ email, subject: Constants.RESET_PASSWORD });
   }
 
   async generateOtp(dto: GenerateOtpType): Promise<void> {
@@ -194,7 +194,7 @@ export class AuthService {
       otpRetries: 0,
     });
 
-    await this.mailerService.sendEmail(dto.email, Constants.EMAIL_SUBJECT, otp);
+    await this.mailerService.sendEmail(dto.email, dto.subject, otp);
   }
 
   async validateOtp(verifyOtpDto: VerifyOtpDto): Promise<void> {
