@@ -6,15 +6,15 @@ import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
 
 dotenv.config();
 
-const { CACHE_HOST, CACHE_ISGLOBAL, CACHE_PORT } =
-  process.env as EnvironmentVariables;
+const { CACHE_HOST, CACHE_ISGLOBAL, CACHE_PORT } = process.env as EnvironmentVariables;
+const CACHE_ISGLOBAL_BOOL = JSON.parse(CACHE_ISGLOBAL as string);
 @Module({
   imports: [
     CacheModule.register({
       store: redisStore,
       host: CACHE_HOST,
       port: Number(CACHE_PORT),
-      isGlobal: Boolean(CACHE_ISGLOBAL),
+      isGlobal: CACHE_ISGLOBAL_BOOL,
     }),
   ],
   providers: [CacheService],
