@@ -98,7 +98,7 @@ export class AuthService {
     userDto.password = hashedPassword;
     const createdUser = await this.usersService.createUser(userDto);
 
-    await this.generateOtp({ email: userDto.email });
+    await this.generateOtp({ email: userDto.email, subject: Constants.EMAIL_SUBJECT });
 
     const tokens = await this.getTokensAndUpdateRtHash(createdUser, Constants.USER);
 
@@ -125,7 +125,7 @@ export class AuthService {
 
     const tokens = await this.getTokensAndUpdateRtHash(createdUser, Constants.ADMIN);
 
-    await this.generateOtp({ email: createdUser.email });
+    await this.generateOtp({ email: createdUser.email, subject: Constants.EMAIL_SUBJECT });
 
     const { password, ...responseUser } = createdUser;
     return {
@@ -170,7 +170,23 @@ export class AuthService {
     return tokens;
   }
 
-  async generateOtp(dto: GenerateOtpType) {
+  async forgotUserPassword(generateOtpDto: GenerateOtpType): Promise<void> {
+    const { email } = generateOtpDto;
+    const user = await this.usersService.findUserByEmail(email);
+    if (!user) throw new ForbiddenException(Constants.ErrorMessages.EMAIL_NOT_FOUND);
+
+    await this.generateOtp({ email, subject: Constants.RESET_PASSWORD });
+  }
+
+  async forgotAdminPassword(generateOtpDto: GenerateOtpType): Promise<void> {
+    const { email } = generateOtpDto;
+    const user = await this.usersService.findAdminUserByEmail(email);
+    if (!user) throw new ForbiddenException(Constants.ErrorMessages.EMAIL_NOT_FOUND);
+
+    await this.generateOtp({ email, subject: Constants.RESET_PASSWORD });
+  }
+
+  async generateOtp(dto: GenerateOtpType): Promise<void> {
     const otpLength = Number(OTP_LENGTH);
     const otp = randomNumberGenerator(otpLength);
     this.cacheService.set(dto.email, {
@@ -178,8 +194,28 @@ export class AuthService {
       otpRetries: 0,
     });
 
-    await this.mailerService.sendEmail(dto.email, Constants.EMAIL_SUBJECT, otp);
-    return otp;
+    await this.mailerService.sendEmail(dto.email, dto.subject, otp);
+  }
+
+  async validateOtp(verifyOtpDto: VerifyOtpDto): Promise<void> {
+    const { email, otp } = verifyOtpDto;
+    const getOtpDetails: VerifyOtpType = await this.cacheService.get(email);
+    if (!getOtpDetails) {
+      throw new NotAcceptableException(Constants.ErrorMessages.INVALID_EMAIL);
+    }
+    if (otp === getOtpDetails.otp) {
+      this.cacheService.delete(email);
+      return;
+    } else {
+      getOtpDetails.otpRetries = getOtpDetails.otpRetries + 1;
+      this.cacheService.set(email, getOtpDetails);
+      if (getOtpDetails.otpRetries === 3) {
+        this.cacheService.delete(email);
+        throw new GoneException(Constants.ErrorMessages.OTP_EXPIRED);
+      } else {
+        throw new NotAcceptableException(Constants.ErrorMessages.INCORRECT_OTP);
+      }
+    }
   }
 
   //** Will be removed */

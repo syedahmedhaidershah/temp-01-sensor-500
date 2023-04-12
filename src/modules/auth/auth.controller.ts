@@ -6,9 +6,10 @@ import { UserDto } from '../users/dto';
 import { UserSafeType } from '../users/types/users-safe.type';
 
 import { AuthService } from './auth.service';
-import { LoginDto, VerifyOtpDto } from './dto';
+import { GenerateOtpDto, LoginDto, VerifyOtpDto } from './dto';
 import { JwtRefreshAuthGuard } from './guards';
 import { SafeUserTokenType, Tokens } from './types';
+import { ResendOtpDto } from './dto/resend-otp.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -120,6 +121,8 @@ export class AuthController {
   //   return this.authService.generateAdminOtp();
   // }
 
+  //* This is used to verify otp for user signup process only *//
+
   @Post('otp/verify')
   @HttpCode(HttpStatus.OK)
   async verifyUserOtp(
@@ -129,6 +132,8 @@ export class AuthController {
     return this.authService.verifyUserOtp(verifyOtpDto);
   }
 
+  //* This is used to verify otp for admin signup process only *//
+
   @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('otp/verify/admin')
   @HttpCode(HttpStatus.OK)
@@ -137,5 +142,43 @@ export class AuthController {
     verifyOtpDto: VerifyOtpDto,
   ): Promise<UserSafeType> {
     return this.authService.verifyAdminOtp(verifyOtpDto);
+  }
+
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  async forgotUserPassword(
+    @Body()
+    generateOtpDto: GenerateOtpDto,
+  ): Promise<void> {
+    return this.authService.forgotUserPassword(generateOtpDto);
+  }
+
+  @Post('forgot-password/admin')
+  @HttpCode(HttpStatus.OK)
+  async forgotAdminPassword(
+    @Body()
+    generateOtpDto: GenerateOtpDto,
+  ): Promise<void> {
+    return this.authService.forgotAdminPassword(generateOtpDto);
+  }
+
+  //* This is used to verify otp throughout the application *//
+
+  @Post('verify-otp')
+  @HttpCode(HttpStatus.OK)
+  async verifyOtp(
+    @Body()
+    verifyOtpDto: VerifyOtpDto,
+  ): Promise<void> {
+    return this.authService.validateOtp(verifyOtpDto);
+  }
+
+  @Post('resend-otp')
+  @HttpCode(HttpStatus.OK)
+  async resendOtp(
+    @Body()
+    resendOtpDto: ResendOtpDto,
+  ): Promise<void> {
+    return this.authService.generateOtp(resendOtpDto);
   }
 }

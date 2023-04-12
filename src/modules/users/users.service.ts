@@ -6,6 +6,8 @@ import { UserType } from './types';
 import { hashData } from 'src/utilities';
 import { AdminUser } from 'src/database/mongoose/schemas/adminuser.schema';
 import { UserSafeType } from './types/users-safe.type';
+import { ChangePasswordDto } from './dto/change-password.dto';
+import { ChangePasswordType } from './types/change-password.type';
 
 // This should be a real class/interface representing a user entity
 
@@ -16,6 +18,22 @@ export class UsersService {
     @InjectModel(AdminUser.name)
     private readonly adminUserModel: Model<UserType>,
   ) {}
+
+  async changeUserPassword(changedPasswordDto: ChangePasswordType) {
+    const hashedPassword = await hashData(changedPasswordDto.password);
+    await this.findUserByEmailAndUpdate(changedPasswordDto.email, {
+      password: hashedPassword,
+    });
+    return true;
+  }
+
+  async changeAdminPassword(changedPasswordDto: ChangePasswordType) {
+    const hashedPassword = await hashData(changedPasswordDto.password);
+    await this.findAdminByEmailAndUpdate(changedPasswordDto.email, {
+      password: hashedPassword,
+    });
+    return true;
+  }
 
   async createUser(userDto: UserType, options: any = {}): Promise<UserType> {
     const { lean = true } = options;
@@ -81,6 +99,20 @@ export class UsersService {
 
   async findAdminUserByUsername(username: string): Promise<UserType | undefined> {
     const user = await this.adminUserModel.findOne({ username }, { hashed_refreshtoken: 0 }).exec();
+    return user.toObject();
+  }
+
+  async findUserByEmail(email: string): Promise<UserType | undefined> {
+    const user = await this.userModel
+      .findOne({ email }, { hashed_refreshtoken: 0, password: 0 })
+      .exec();
+    return user.toObject();
+  }
+
+  async findAdminUserByEmail(email: string): Promise<UserType | undefined> {
+    const user = await this.adminUserModel
+      .findOne({ email }, { hashed_refreshtoken: 0, password: 0 })
+      .exec();
     return user.toObject();
   }
 
