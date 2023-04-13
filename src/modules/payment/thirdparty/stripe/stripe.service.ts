@@ -28,6 +28,7 @@ const {
 
 /**
  * @note GRX-55 | test - jira/github integration
+ * New test
  */
 @Injectable()
 export class StripeService {
