@@ -6,7 +6,7 @@ import { Role } from 'src/common/enums';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly userService: UsersService) { }
 
   @Post('change-password')
   @HttpCode(HttpStatus.CREATED)
@@ -23,7 +23,9 @@ export class UserController {
 
   @Get('check-username')
   @HttpCode(HttpStatus.OK)
-  async checkUsername(@Query('username') username: string): Promise<{ available: boolean }> {
+  async checkUsername(
+    @Query('username') username: string
+  ): Promise<{ available: boolean }> {
     return this.userService.checkUsername(username);
   }
 

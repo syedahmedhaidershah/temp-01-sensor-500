@@ -17,6 +17,7 @@ import { RouteInfo } from '@nestjs/common/interfaces';
 import { JwtAuthGuardProvider } from './modules/auth/guards';
 import { ResponseInterceptorProvider } from './common/interceptors';
 import { RedisCacheModule } from './modules/cache/cache.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 /** Local constants and statics */
 import EnvironmentVariables from './common/interfaces/environmentVariables';
@@ -40,6 +41,7 @@ const toExclueRouteInfosFromcheckExpiredToken: RouteInfo[] = [
     ModelsModule,
     ChairModule,
     RedisCacheModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtAuthGuardProvider, ResponseInterceptorProvider],

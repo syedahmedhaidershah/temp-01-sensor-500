@@ -28,4 +28,8 @@ export default interface EnvironmentVariables {
   readonly MQTT_USERNAME?: string;
   readonly MQTT_PASSWORD?: string;
   readonly API_BASE?: string;
+  readonly STRIPE_PUBLISHABLE_KEY?: string;
+  readonly STRIPE_SECRET_KEY?: string;
+  // Endpoint secret for webhook for local
+  readonly STRIPE_ENDPOINT_SECRET_LOCAL?: string;
 }

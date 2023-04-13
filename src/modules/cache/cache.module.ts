@@ -6,7 +6,12 @@ import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
 
 dotenv.config();
 
-const { CACHE_HOST, CACHE_ISGLOBAL, CACHE_PORT } = process.env as EnvironmentVariables;
+const {
+  CACHE_HOST,
+  CACHE_ISGLOBAL = 'true',
+  CACHE_PORT
+} = process.env as EnvironmentVariables;
+
 const CACHE_ISGLOBAL_BOOL = JSON.parse(CACHE_ISGLOBAL as string);
 @Module({
   imports: [
@@ -20,4 +25,4 @@ const CACHE_ISGLOBAL_BOOL = JSON.parse(CACHE_ISGLOBAL as string);
   providers: [CacheService],
   exports: [CacheService],
 })
-export class RedisCacheModule {}
+export class RedisCacheModule { }
