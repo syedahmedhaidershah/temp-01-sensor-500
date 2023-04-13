@@ -138,4 +138,13 @@ export class UsersService {
       { new: true },
     );
   }
+
+  async checkUsername(userName: string): Promise<{ available: boolean }> {
+    const user = await this.userModel.findOne({ username: userName }).exec();
+    return { available: !user };
+  }
+  async checkAdminUsername(userName: string): Promise<{ available: boolean }> {
+    const user = await this.adminUserModel.findOne({ username: userName }).exec();
+    return { available: !user };
+  }
 }
