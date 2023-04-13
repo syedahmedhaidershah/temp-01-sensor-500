@@ -4,5 +4,6 @@ export enum Role {
   User = 'user',
   SerivceAccount = 'service-account',
   Vacationer = 'vacationer',
-  TechnicianAccount = 'technician-account'
+  TechnicianAccount = 'technician-account',
+  Guest = 'guest',
 }

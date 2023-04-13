@@ -6,7 +6,6 @@ import { UserType } from './types';
 import { hashData } from 'src/utilities';
 import { AdminUser } from 'src/database/mongoose/schemas/adminuser.schema';
 import { UserSafeType } from './types/users-safe.type';
-import { ChangePasswordDto } from './dto/change-password.dto';
 import { ChangePasswordType } from './types/change-password.type';
 
 // This should be a real class/interface representing a user entity
@@ -43,7 +42,7 @@ export class UsersService {
       return createdUser;
     }
 
-    return createdUser.toObject();
+    return createdUser?.toObject();
   }
 
   async createAdminUser(userDto: UserType, options: any = {}): Promise<UserType> {
@@ -56,7 +55,7 @@ export class UsersService {
       return createdAdmin;
     }
 
-    return createdAdmin.toObject();
+    return createdAdmin?.toObject();
   }
 
   async findUserByEmailAndUpdate(email: string, data: Partial<UserType>): Promise<UserSafeType> {
@@ -94,26 +93,26 @@ export class UsersService {
 
   async findUserByUsername(username: string): Promise<UserType | undefined> {
     const user = await this.userModel.findOne({ username }, { hashed_refreshtoken: 0 }).exec();
-    return user.toObject();
+    return user?.toObject();
   }
 
   async findAdminUserByUsername(username: string): Promise<UserType | undefined> {
     const user = await this.adminUserModel.findOne({ username }, { hashed_refreshtoken: 0 }).exec();
-    return user.toObject();
+    return user?.toObject();
   }
 
   async findUserByEmail(email: string): Promise<UserType | undefined> {
     const user = await this.userModel
       .findOne({ email }, { hashed_refreshtoken: 0, password: 0 })
       .exec();
-    return user.toObject();
+    return user?.toObject();
   }
 
   async findAdminUserByEmail(email: string): Promise<UserType | undefined> {
     const user = await this.adminUserModel
       .findOne({ email }, { hashed_refreshtoken: 0, password: 0 })
       .exec();
-    return user.toObject();
+    return user?.toObject();
   }
 
   async updateUserRtHash(id: string, rt: string): Promise<void> {
