@@ -285,7 +285,12 @@ export class AuthService {
     if (!user) throw new NotFoundException(Constants.ErrorMessages.NO_USER_FOUND);
     const passwordMatches = await compareHashed(pass, user.password);
 
-    if (!passwordMatches) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    if (!passwordMatches) {
+      const key = `login_attempts:${username}`;
+      const loginAttempts = parseInt((await this.cacheService.get(key)) ?? '0', 10);
+      await this.cacheService.set(key, loginAttempts + 1);
+      throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    }
     return user;
   }
 
