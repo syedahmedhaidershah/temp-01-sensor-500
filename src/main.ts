@@ -10,6 +10,8 @@ import * as dotenv from 'dotenv';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import helmet from 'helmet';
+import { AllExceptionsFilter } from 'src/common/filters';
+
 
 async function bootstrap() {
   dotenv.config();
@@ -23,7 +25,6 @@ async function bootstrap() {
   /** Configuring runtime and bootstrapping */
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
-    { cors: ENABLE_ALL_ORIGINS_BOOL },
     //* User for fastify integration
     // new FastifyAdapter(),
     // {
@@ -33,6 +34,12 @@ async function bootstrap() {
   app.setGlobalPrefix(API_BASE);
   app.useGlobalPipes(new ValidationPipe());
   app.use(helmet());
+  app.useGlobalFilters(new AllExceptionsFilter());
+
+
+  if (ENABLE_ALL_ORIGINS_BOOL) {
+    app.enableCors();
+  }
 
   return await app.listen(PORT);
 }
