@@ -8,4 +8,6 @@ export const ErrorMessagesConstants = {
   NO_USER_FOUND: 'No user found.',
   CHAIR_UPDATE_DENIED: 'This action can`t be performed for this chair state',
   EMAIL_NOT_FOUND: 'Email not found',
+  ROLE_ERROR: 'Roles must be valid.',
+  MIN_ROLE_ERROR: 'Must have at least one role.',
 };

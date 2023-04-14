@@ -41,6 +41,10 @@ async function bootstrap() {
     app.enableCors();
   }
 
+  if (ENABLE_ALL_ORIGINS_BOOL) {
+    app.enableCors();
+  }
+
   return await app.listen(PORT);
 }
 
