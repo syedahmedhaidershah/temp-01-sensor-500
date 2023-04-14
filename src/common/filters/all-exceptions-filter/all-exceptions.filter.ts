@@ -15,7 +15,10 @@ import { MongoErrors } from 'src/common/enums';
  * Using dry-kiss for switching between handlers
  */
 const codeKeyMaps = {
-  '11000': 'DuplicateKey',
+  '11000': {
+    key: 'DuplicateKey',
+    statusCode: HttpStatus.CONFLICT,
+  },
 }
 
 const handlerMethods = {
@@ -25,18 +28,30 @@ const handlerMethods = {
     const toReturn = {
       data: 'Error',
       message,
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
     }
 
-    const errorKey = codeKeyMaps[code.toString()];
+    const errorObject = codeKeyMaps[code.toString()];
 
-    if (!errorKey)
+    if (!errorObject)
       return toReturn;
 
     toReturn.data = Object
       .keys(keyPattern)
       .pop();
 
-    toReturn.message = MongoErrors[errorKey];
+    const {
+      key: errorKey,
+      statusCode,
+    } = errorObject
+
+    Object.assign(
+      toReturn,
+      {
+        message: MongoErrors[errorKey],
+        statusCode
+      }
+    )
 
     return toReturn;
   },
@@ -46,6 +61,7 @@ const handlerMethods = {
     return {
       data: 'Error',
       message,
+      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
     }
   }
 }
@@ -62,15 +78,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     console.log(exception);
 
-    const statusCode =
-      exception instanceof HttpException
-        ? exception.getStatus()
-        : HttpStatus.INTERNAL_SERVER_ERROR;
-
 
     const useResponse = handlerMethods[exception.name]
-      ? handlerMethods[exception.name](exception)
-      : handlerMethods.default(exception)
+      ? (handlerMethods[exception.name](exception))
+      : (handlerMethods.default(exception))
+
+
+    const { statusCode = HttpStatus.INTERNAL_SERVER_ERROR } = useResponse;
 
 
     // Throw an exceptions for either
