@@ -39,15 +39,28 @@ const handlerMethods = {
     toReturn.message = MongoErrors[errorKey];
 
     return toReturn;
+  },
+  default: function (exception) {
+    const { message } = exception as { message: string };
+
+    return {
+      data: 'Error',
+      message,
+    }
   }
 }
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
 
-  catch(exception: InternalServerErrorException, host: ArgumentsHost) {
+  catch(
+    exception: InternalServerErrorException,
+    host: ArgumentsHost
+  ) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
+
+    console.log(exception);
 
     const statusCode =
       exception instanceof HttpException
@@ -55,7 +68,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
 
-    const useResponse = handlerMethods[exception.name](exception);
+    const useResponse = handlerMethods[exception.name]
+      ? handlerMethods[exception.name](exception)
+      : handlerMethods.default(exception)
+
 
     // Throw an exceptions for either
     // MongoError, ValidationError, TypeError, CastError and Error
