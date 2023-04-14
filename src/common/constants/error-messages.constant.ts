@@ -9,4 +9,6 @@ export const ErrorMessagesConstants = {
   CHAIR_UPDATE_DENIED: 'This action can`t be performed for this chair state',
   EMAIL_NOT_FOUND: 'Email not found',
   PAYMENT_ALREADY_INPROGRESS: 'Payment already in progress, please wait 5 minutes before continuing',
+  ROLE_ERROR: 'Roles must be valid.',
+  MIN_ROLE_ERROR: 'Must have at least one role.',
 };
