@@ -1,13 +1,8 @@
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { CacheService } from 'src/modules/cache/cache.service';
 import { Constants } from '../constants';
+import { TooManyRequestsException } from '../exceptions';
 
 @Injectable()
 export class UserLockInterceptor implements NestInterceptor {
@@ -21,7 +16,7 @@ export class UserLockInterceptor implements NestInterceptor {
     const isLock = await this.cacheService.get(lockKey);
 
     if (isLock) {
-      throw new ForbiddenException(Constants.ErrorMessages.LOCKED_ACCOUNT);
+      throw new TooManyRequestsException(Constants.ErrorMessages.LOCKED_ACCOUNT);
     }
 
     return next.handle();
