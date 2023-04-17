@@ -28,6 +28,9 @@ const handlerMethods = {
     const toReturn = {
       data: 'Error',
       message,
+      /**
+       * @note  Default status is either the exception retrieved status code, otherwise INTERNAL_SERVER_ERROR if not present
+       */
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
     }
 
@@ -35,10 +38,6 @@ const handlerMethods = {
 
     if (!errorObject)
       return toReturn;
-
-    toReturn.data = Object
-      .keys(keyPattern)
-      .pop();
 
     const {
       key: errorKey,
@@ -49,7 +48,10 @@ const handlerMethods = {
       toReturn,
       {
         message: MongoErrors[errorKey],
-        statusCode
+        statusCode,
+        data: Object
+          .keys(keyPattern)
+          .pop()
       }
     )
 
@@ -61,7 +63,10 @@ const handlerMethods = {
     return {
       data: 'Error',
       message,
-      statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+      /**
+       * @note  Default status is either the exception retrieved status code, otherwise INTERNAL_SERVER_ERROR if not present
+       */
+      statusCode: exception?.getStatus() || HttpStatus.INTERNAL_SERVER_ERROR,
     }
   }
 }
@@ -84,7 +89,9 @@ export class AllExceptionsFilter implements ExceptionFilter {
       : (handlerMethods.default(exception))
 
 
-    const { statusCode = HttpStatus.INTERNAL_SERVER_ERROR } = useResponse;
+    const {
+      statusCode = HttpStatus.INTERNAL_SERVER_ERROR
+    } = useResponse;
 
 
     // Throw an exceptions for either
