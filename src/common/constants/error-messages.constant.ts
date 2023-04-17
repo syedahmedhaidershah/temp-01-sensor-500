@@ -10,4 +10,5 @@ export const ErrorMessagesConstants = {
   EMAIL_NOT_FOUND: 'Email not found',
   ROLE_ERROR: 'Roles must be valid.',
   MIN_ROLE_ERROR: 'Must have at least one role.',
+  LOCKED_ACCOUNT: 'Too many failed login attempts your account is locked for 2 minutes',
 };
