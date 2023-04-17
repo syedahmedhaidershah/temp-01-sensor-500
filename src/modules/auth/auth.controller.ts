@@ -46,6 +46,7 @@ export class AuthController {
   }
 
   @Public()
+  @UseInterceptors(UserLockInterceptor)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async userLogin(
