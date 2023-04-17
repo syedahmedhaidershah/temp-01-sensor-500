@@ -11,4 +11,5 @@ export const ErrorMessagesConstants = {
   PAYMENT_ALREADY_INPROGRESS: 'Payment already in progress, please wait 5 minutes before continuing',
   ROLE_ERROR: 'Roles must be valid.',
   MIN_ROLE_ERROR: 'Must have at least one role.',
+  PAYMENT_METHOD_NOT_SETUP: 'The payment method is unavailable or not available, kindly contact support',
 };

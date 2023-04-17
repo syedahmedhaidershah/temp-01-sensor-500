@@ -7,7 +7,7 @@ export type UserType = {
 
   email: string;
 
-  phone?: string;
+  phone_number?: string;
 
   last_name?: string;
 

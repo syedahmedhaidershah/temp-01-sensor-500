@@ -40,3 +40,8 @@ lerna-debug.log*
 
 # Temp volumes
 data
+
+
+# Sandbox
+/sandbox/garbage
+sandbox/garbage

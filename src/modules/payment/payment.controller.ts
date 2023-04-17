@@ -2,8 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { Authorization } from 'src/common/decorators';
+import { Authorization, GetCurrentUser } from 'src/common/decorators';
 import { Role } from 'src/common/enums';
+import { RegisterUserDto } from './dto/register-user.dto';
 
 @Controller('payment')
 export class PaymentController {
@@ -13,9 +14,11 @@ export class PaymentController {
 
   @Authorization(Role.User, Role.Vacationer)
   @Post('register/user')
-  create(@Body() createPaymentDto: CreatePaymentDto) {
+  create(
+    @GetCurrentUser() userData: RegisterUserDto
+  ) {
     return this.paymentService
-      .create(createPaymentDto);
+      .addUser(userData);
   }
 
   @Get()

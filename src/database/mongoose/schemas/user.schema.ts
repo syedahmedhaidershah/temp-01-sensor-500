@@ -13,9 +13,6 @@ export class User {
   @Prop()
   email: string;
 
-  @Prop()
-  phone?: string;
-
   @Prop({ default: '' })
   last_name?: string;
 

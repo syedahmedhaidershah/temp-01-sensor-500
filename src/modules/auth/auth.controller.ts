@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, InternalServerErrorException, Post, Req, UseGuards } from '@nestjs/common';
 import { Request } from 'express';
 import { Authorization, GetCurrentUser, Public } from 'src/common/decorators';
 import { Role } from 'src/common/enums';
@@ -13,7 +13,7 @@ import { ResendOtpDto } from './dto/resend-otp.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   @Public()
   @Post('signup')
@@ -22,7 +22,12 @@ export class AuthController {
     @Body()
     userDto: UserDto,
   ): Promise<SafeUserTokenType> {
-    return this.authService.userSignUp(userDto);
+    try {
+      return this.authService.userSignUp(userDto);
+    } catch (exc) {
+      console.log(exc);
+      throw new InternalServerErrorException('test');
+    }
   }
 
   @Public()

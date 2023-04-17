@@ -23,7 +23,7 @@ export class User extends Model {
   // password if set up
   password?: string;
 
-  phone?: string;
+  phone_number?: string;
 
   instance: UserType | undefined;
 

@@ -16,7 +16,7 @@ export class UsersService {
     @InjectModel(User.name) private readonly userModel: Model<UserType>,
     @InjectModel(AdminUser.name)
     private readonly adminUserModel: Model<UserType>,
-  ) {}
+  ) { }
 
   async changeUserPassword(changedPasswordDto: ChangePasswordType) {
     const hashedPassword = await hashData(changedPasswordDto.password);
