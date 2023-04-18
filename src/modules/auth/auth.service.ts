@@ -39,6 +39,9 @@ const { JWT_SECRET_ACCESS_TOKEN_KEY, JWT_SECRET_REFRESH_TOKEN_KEY, OTP_LENGTH } 
 
 @Injectable()
 export class AuthService {
+  private readonly MAX_LOGIN_ATTEMPTS = 3;
+  private readonly LOCKOUT_TIMEOUT = 120000;
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -274,10 +277,16 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<UserType | null> {
     const user = await this.usersService.findUserByUsername(username);
-    if (!user) throw new NotFoundException('No User Found');
+    if (!user) throw new NotFoundException(Constants.ErrorMessages.NO_USER_FOUND);
     const passwordMatches = await compareHashed(pass, user.password);
 
-    if (!passwordMatches) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    if (!passwordMatches) {
+      await this.increaseLoginAttempts(username);
+
+      throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    }
+    await this.resetLoginAttempts(username);
+
     return user;
   }
 
@@ -286,7 +295,11 @@ export class AuthService {
     if (!user) throw new NotFoundException(Constants.ErrorMessages.NO_USER_FOUND);
     const passwordMatches = await compareHashed(pass, user.password);
 
-    if (!passwordMatches) throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    if (!passwordMatches) {
+      await this.increaseLoginAttempts(username);
+      throw new ForbiddenException(Constants.ErrorMessages.ACCESS_DENIED);
+    }
+    await this.resetLoginAttempts(username);
     return user;
   }
 
@@ -326,5 +339,24 @@ export class AuthService {
       access_token: accessToken,
       refresh_token: refreshToken,
     };
+  }
+
+  async increaseLoginAttempts(username: string): Promise<void> {
+    const loginAttemptsKey = `login_attempts:${username}`;
+
+    const loginAttempts = parseInt((await this.cacheService.get(loginAttemptsKey)) ?? '0', 10);
+    await this.cacheService.set(loginAttemptsKey, loginAttempts + 1);
+    if (loginAttempts >= this.MAX_LOGIN_ATTEMPTS) {
+      const lockKey = `lock:${username}`;
+      await this.cacheService.set(lockKey, true, this.LOCKOUT_TIMEOUT);
+
+      throw new ForbiddenException(Constants.ErrorMessages.LOCKED_ACCOUNT);
+    }
+  }
+
+  async resetLoginAttempts(username: string): Promise<void> {
+    const loginAttemptsKey = `login_attempts:${username}`;
+
+    await this.cacheService.delete(loginAttemptsKey);
   }
 }

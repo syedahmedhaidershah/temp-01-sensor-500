@@ -1,4 +1,14 @@
-import { Body, Controller, HttpCode, HttpStatus, InternalServerErrorException, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+
 import { Request } from 'express';
 import { Authorization, GetCurrentUser, Public } from 'src/common/decorators';
 import { Role } from 'src/common/enums';
@@ -10,6 +20,7 @@ import { GenerateOtpDto, LoginDto, VerifyOtpDto } from './dto';
 import { JwtRefreshAuthGuard } from './guards';
 import { SafeUserTokenType, Tokens } from './types';
 import { ResendOtpDto } from './dto/resend-otp.dto';
+import { UserLockInterceptor } from 'src/common/interceptors';
 
 @Controller('auth')
 export class AuthController {
@@ -22,12 +33,7 @@ export class AuthController {
     @Body()
     userDto: UserDto,
   ): Promise<SafeUserTokenType> {
-    try {
-      return this.authService.userSignUp(userDto);
-    } catch (exc) {
-      console.log(exc);
-      throw new InternalServerErrorException('test');
-    }
+    return this.authService.userSignUp(userDto);
   }
 
   @Public()
@@ -41,6 +47,7 @@ export class AuthController {
   }
 
   @Public()
+  @UseInterceptors(UserLockInterceptor)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async userLogin(
@@ -51,6 +58,7 @@ export class AuthController {
   }
 
   @Public()
+  @UseInterceptors(UserLockInterceptor)
   @Post('login/admin')
   @HttpCode(HttpStatus.OK)
   async adminLogin(
