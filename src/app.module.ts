@@ -37,7 +37,15 @@ const toExclueRouteInfosFromcheckExpiredToken: RouteInfo[] = [
 @Module({
   imports: [
     AuthModule,
-    MongooseModule.forRoot(MONGO_URL),
+    MongooseModule
+      .forRoot(
+        MONGO_URL,
+        {
+          minPoolSize: 1,
+          maxPoolSize: 200,
+          autoIndex: true, //make this also true
+        }
+      ),
     ModelsModule,
     ChairModule,
     RedisCacheModule,

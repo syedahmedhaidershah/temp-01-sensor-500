@@ -13,4 +13,6 @@ export const ErrorMessagesConstants = {
   MIN_ROLE_ERROR: 'Must have at least one role.',
   PAYMENT_METHOD_NOT_SETUP: 'The payment method is unavailable or not available, kindly contact support',
   LOCKED_ACCOUNT: 'Too many failed login attempts your account is locked for 2 minutes',
+  STRIPE_CUSTOMER_ALREADY_EXISTS: 'Stripe customer already exists',
+  STRIPE_CUSTOMER_NOT_REGISTERED: 'Stripe customer not registered',
 };
