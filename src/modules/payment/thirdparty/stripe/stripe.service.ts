@@ -43,6 +43,18 @@ export class StripeService implements IStripeSerice {
                     apiVersion: STRIPE_API_VERSION
                 });
         }
+
+        (async () => {
+            const list = await this.instance.customers.list({ limit: 100 });
+            console.log(list.data);
+            for await (const data of list.data) {
+                if (!data)
+                    continue;
+
+                const deleted = await this.instance.customers.del(data.id);
+                console.log(deleted);
+            }
+        })()
     }
 
     async createStripeCustomer(
@@ -71,10 +83,23 @@ export class StripeService implements IStripeSerice {
 
             await this.cache.set(key, Customer, 0);
         }
+
+        return Customer;
+    }
+
+    async getCustomerByEmail(
+        email: string
+    ): Promise<stripe.Customer | null> {
+        const customersList = await this.instance.customers.list({ email });
+
+        const [customer] = customersList.data;
+
+        return customer || null;
     }
 }
 
 export interface IStripeSerice {
     instance: stripe | undefined;
     cache: CacheService;
+    createStripeCustomer(data: UserType, options: CreateStripeCustomer): Promise<stripe.Response<stripe.Customer>>;
 }

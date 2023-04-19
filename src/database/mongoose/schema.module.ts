@@ -1,27 +1,35 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AdminUser, AdminUserSchema, Chair, ChairSchema, User, UserSchema } from './schemas';
-import { ExpiredToken, ExpiredTokenSchema } from './schemas/expired-token.schema';
+import {
+  AdminUser,
+  AdminUserSchema,
+  Chair,
+  ChairSchema,
+  User,
+  UserSchema,
+  StripeCustomer,
+  StripeCustomerSchema,
+  ExpiredToken,
+  ExpiredTokenSchema,
+} from './schemas';
+
+
+const mongooseModuleToExport = MongooseModule
+  .forFeature([
+    { name: User.name, schema: UserSchema },
+    { name: AdminUser.name, schema: AdminUserSchema },
+    { name: Chair.name, schema: ChairSchema },
+    { name: ExpiredToken.name, schema: ExpiredTokenSchema },
+    { name: StripeCustomer.name, schema: StripeCustomerSchema },
+    // add more models here
+  ])
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: AdminUser.name, schema: AdminUserSchema },
-      {name:Chair.name,schema:ChairSchema},
-      { name: ExpiredToken.name, schema: ExpiredTokenSchema },
-      // add more models here
-    ]),
+    mongooseModuleToExport,
   ],
   exports: [
-    MongooseModule.forFeature([
-      { name: User.name, schema: UserSchema },
-      { name: AdminUser.name, schema: AdminUserSchema },
-      {name:Chair.name,schema:ChairSchema},
-      { name: ExpiredToken.name, schema: ExpiredTokenSchema },
-
-      // export models here
-    ]),
+    mongooseModuleToExport,
   ],
 })
-export class ModelsModule {}
+export class ModelsModule { }

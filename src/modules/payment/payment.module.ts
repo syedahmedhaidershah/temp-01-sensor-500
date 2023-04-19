@@ -6,6 +6,7 @@ import { RedisCacheModule } from '../cache/cache.module';
 import { PaymentAdapterService } from './payment-adapter/payment-adapter.service';
 import { StripePaymentIntentService } from './thirdparty/stripe/stripe-payment-intent/stripe-payment-intent.service';
 import { StripeCheckoutService } from './thirdparty/stripe/stripe-checkout/stripe-checkout.service';
+import { ModelsModule } from 'src/database/mongoose';
 
 @Module({
   controllers: [PaymentController],
@@ -21,6 +22,7 @@ import { StripeCheckoutService } from './thirdparty/stripe/stripe-checkout/strip
   ],
   imports: [
     RedisCacheModule,
+    ModelsModule,
   ],
 })
 export class PaymentModule { }

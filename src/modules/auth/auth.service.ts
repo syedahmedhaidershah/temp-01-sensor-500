@@ -34,7 +34,12 @@ import { UserSafeType } from '../users/types/users-safe.type';
 
 dotenv.config();
 
-const { JWT_SECRET_ACCESS_TOKEN_KEY, JWT_SECRET_REFRESH_TOKEN_KEY, OTP_LENGTH } =
+const {
+  JWT_SECRET_ACCESS_TOKEN_KEY,
+  JWT_SECRET_REFRESH_TOKEN_KEY,
+  OTP_LENGTH,
+  JWT_DEFAULT_EXPIRY_TIME,
+} =
   process.env as EnvironmentVariables;
 
 @Injectable()
@@ -312,7 +317,7 @@ export class AuthService {
           _id,
           roles,
         },
-        { secret: JWT_SECRET_ACCESS_TOKEN_KEY, expiresIn: 60 * 15 },
+        { secret: JWT_SECRET_ACCESS_TOKEN_KEY, expiresIn: +JWT_DEFAULT_EXPIRY_TIME * 60 },
       ),
       this.jwtService.signAsync(
         {
@@ -322,7 +327,7 @@ export class AuthService {
         },
         {
           secret: JWT_SECRET_REFRESH_TOKEN_KEY,
-          expiresIn: 60 * 60 * 24 * 7,
+          expiresIn: +JWT_DEFAULT_EXPIRY_TIME * 60 * 60 * 24 * 7,
         },
       ),
     ]);

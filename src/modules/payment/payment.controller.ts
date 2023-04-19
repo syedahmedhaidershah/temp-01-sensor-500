@@ -1,10 +1,11 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { Authorization, GetCurrentUser } from 'src/common/decorators';
 import { Role } from 'src/common/enums';
-import { RegisterUserDto } from './dto/register-user.dto';
+import { CreateCustomerUserData } from './thirdparty/stripe/types';
+import { RegisterPaymentMethodDto } from './dto/register-payment-method.dto';
 
 @Controller('payment')
 export class PaymentController {
@@ -15,10 +16,26 @@ export class PaymentController {
   @Authorization(Role.User, Role.Vacationer)
   @Post('register/user')
   create(
-    @GetCurrentUser() userData: RegisterUserDto
+    @GetCurrentUser() userData: CreateCustomerUserData
   ) {
     return this.paymentService
-      .addUser(userData);
+      .addUser(
+        userData,
+        { isGuest: userData.is_guest }
+      );
+  }
+
+  @Authorization(Role.User, Role.Vacationer)
+  @Patch('register/user-method')
+  async registerPaymentMethodForUser(
+    @GetCurrentUser() userData: CreateCustomerUserData,
+    @Body() attachPaymentMethodPayload: RegisterPaymentMethodDto,
+  ) {
+    return this.paymentService
+      .attachPaymentPethod(
+        userData,
+        attachPaymentMethodPayload,
+      );
   }
 
   @Get()

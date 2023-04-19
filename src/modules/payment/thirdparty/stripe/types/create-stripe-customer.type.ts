@@ -1,4 +1,4 @@
 export type CreateStripeCustomer = {
-    isGuest: boolean;
-    isAdmin: true;
+    isGuest?: boolean;
+    isAdmin?: true;
 }

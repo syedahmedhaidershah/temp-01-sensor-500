@@ -1,11 +1,21 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { StripeService } from '../stripe.service';
 import { ConfirmPaymentData, CreatePaymentIntentData, AttachMethodCustomerData } from '../types';
 import { Constants } from 'src/common/constants';
 import { ResourceLockedException } from 'src/common/exceptions';
+import Stripe from 'stripe';
 
 @Injectable()
 export class StripePaymentIntentService extends StripeService {
+
+    async createPaymentMethod(customerId: string, cardDetails: Stripe.PaymentMethodCreateParams.Card1) {
+        const method = await this.instance.paymentMethods.create({
+            card: cardDetails,
+            customer: customerId,
+        });
+
+        return method;
+    }
 
     async createPaymentIntent(
         data: CreatePaymentIntentData,
