@@ -20,13 +20,23 @@ import { JwtRefreshAuthGuard } from './guards';
 import { SafeUserTokenType, Tokens } from './types';
 import { ResendOtpDto } from './dto/resend-otp.dto';
 import { UserLockInterceptor } from 'src/common/interceptors';
+import {
+  ApiForbiddenResponse,
+  ApiHeader,
+  ApiInternalServerErrorResponse,
+  ApiNotAcceptableResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { Constants } from 'src/common/constants';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
   @Post('signup')
+  @ApiForbiddenResponse({ description: Constants.ErrorMessages.USER_USERNAME_ALREADY_EXIST })
   @HttpCode(HttpStatus.CREATED)
   async userSignUp(
     @Body()
@@ -37,6 +47,7 @@ export class AuthController {
 
   @Public()
   @Post('signup/admin')
+  @ApiForbiddenResponse({ description: Constants.ErrorMessages.ADMIN_USERNAME_ALREADY_EXIST })
   @HttpCode(HttpStatus.CREATED)
   async adminSignUp(
     @Body()
@@ -48,6 +59,7 @@ export class AuthController {
   @Public()
   @UseInterceptors(UserLockInterceptor)
   @Post('login')
+  @ApiForbiddenResponse({ description: Constants.ErrorMessages.ACCESS_DENIED })
   @HttpCode(HttpStatus.OK)
   async userLogin(
     @Body()
@@ -59,6 +71,7 @@ export class AuthController {
   @Public()
   @UseInterceptors(UserLockInterceptor)
   @Post('login/admin')
+  @ApiForbiddenResponse({ description: Constants.ErrorMessages.ACCESS_DENIED })
   @HttpCode(HttpStatus.OK)
   async adminLogin(
     @Body()
@@ -96,6 +109,7 @@ export class AuthController {
   @Public()
   @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh')
+  @ApiForbiddenResponse({ description: Constants.ErrorMessages.ACCESS_DENIED })
   @HttpCode(HttpStatus.OK)
   async userRefreshTokens(
     @GetCurrentUser('_id')
@@ -107,9 +121,11 @@ export class AuthController {
   }
 
   @Public()
+  @ApiHeader({ name: 'x-refresh-token' })
   @Authorization(Role.Admin, Role.SuperAdmin)
   @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh/admin')
+  @ApiForbiddenResponse({ description: Constants.ErrorMessages.ACCESS_DENIED })
   @HttpCode(HttpStatus.OK)
   async adminRefreshTokens(
     @GetCurrentUser('_id')
@@ -136,6 +152,7 @@ export class AuthController {
   //* This is used to verify otp for user signup process only *//
 
   @Post('otp/verify')
+  @ApiNotAcceptableResponse({ description: Constants.ErrorMessages.INCORRECT_OTP })
   @HttpCode(HttpStatus.OK)
   async verifyUserOtp(
     @Body()
@@ -148,6 +165,7 @@ export class AuthController {
 
   @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('otp/verify/admin')
+  @ApiNotAcceptableResponse({ description: Constants.ErrorMessages.INCORRECT_OTP })
   @HttpCode(HttpStatus.OK)
   async verifyAdminOtp(
     @Body()
@@ -157,6 +175,7 @@ export class AuthController {
   }
 
   @Post('forgot-password')
+  @ApiForbiddenResponse({ description: Constants.ErrorMessages.EMAIL_NOT_FOUND })
   @HttpCode(HttpStatus.OK)
   async forgotUserPassword(
     @Body()
@@ -166,6 +185,7 @@ export class AuthController {
   }
 
   @Post('forgot-password/admin')
+  @ApiForbiddenResponse({ description: Constants.ErrorMessages.EMAIL_NOT_FOUND })
   @HttpCode(HttpStatus.OK)
   async forgotAdminPassword(
     @Body()
@@ -177,6 +197,7 @@ export class AuthController {
   //* This is used to verify otp throughout the application *//
 
   @Post('verify-otp')
+  @ApiNotAcceptableResponse({ description: Constants.ErrorMessages.INCORRECT_OTP })
   @HttpCode(HttpStatus.OK)
   async verifyOtp(
     @Body()
@@ -186,6 +207,7 @@ export class AuthController {
   }
 
   @Post('resend-otp')
+  @ApiInternalServerErrorResponse({ description: Constants.ErrorMessages.INTERNAL_SERVER_ERROR })
   @HttpCode(HttpStatus.OK)
   async resendOtp(
     @Body()

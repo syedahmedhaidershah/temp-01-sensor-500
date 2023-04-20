@@ -30,7 +30,7 @@ const { NODE_ENV, MONGO_URL } = process.env as EnvironmentVariables;
 
 const toExclueRouteInfosFromcheckExpiredToken: RouteInfo[] = [
   { path: 'auth/(.*)', method: RequestMethod.ALL },
-  { path: '(.*)/health-check', method: RequestMethod.GET },
+  { path: 'health-check', method: RequestMethod.GET },
 ];
 
 @Module({

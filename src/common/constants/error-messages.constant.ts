@@ -11,4 +11,5 @@ export const ErrorMessagesConstants = {
   ROLE_ERROR: 'Roles must be valid.',
   MIN_ROLE_ERROR: 'Must have at least one role.',
   LOCKED_ACCOUNT: 'Too many failed login attempts your account is locked for 2 minutes',
+  INTERNAL_SERVER_ERROR: 'Internal server error',
 };
