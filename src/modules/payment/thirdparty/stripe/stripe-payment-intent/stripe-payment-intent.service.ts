@@ -4,14 +4,25 @@ import { ConfirmPaymentData, CreatePaymentIntentData, AttachMethodCustomerData }
 import { Constants } from 'src/common/constants';
 import { ResourceLockedException } from 'src/common/exceptions';
 import Stripe from 'stripe';
+import { PaymentMethodTypes } from 'src/modules/payment/enums';
+import { capitalize } from 'src/utilities';
 
 @Injectable()
 export class StripePaymentIntentService extends StripeService {
 
-    async createPaymentMethod(customerId: string, cardDetails: Stripe.PaymentMethodCreateParams.Card1) {
+    async createPaymentMethod(data) {
+        const {
+            paymentMethod: {
+                type,
+                ...cardDetails
+            },
+        } = data;
+
+        const paymentMethodKey = capitalize(type);
+
         const method = await this.instance.paymentMethods.create({
             card: cardDetails,
-            customer: customerId,
+            type: PaymentMethodTypes[paymentMethodKey],
         });
 
         return method;
@@ -53,7 +64,7 @@ export class StripePaymentIntentService extends StripeService {
     ) {
         const {
             customerId: customer,
-            paymentMethod: { id: paymentMethodId }
+            paymentMethodData: { id: paymentMethodId }
         } = data;
 
         const paymentMethodAttached = await this.instance.paymentMethods

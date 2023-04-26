@@ -26,7 +26,9 @@ import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
 import { STRIPE_API_VERSION } from '../config';
 
 
-dotenv.config();
+dotenv.config({
+    path: '../../.env'
+});
 
 const app = express();
 

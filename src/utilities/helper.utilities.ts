@@ -46,3 +46,15 @@ export const randomNumberGenerator = (length: number): number => {
 export const generateUUID = (): string => {
   return uuidv4();
 };
+
+
+export const capitalize = (stringToCapitalize: string): string => {
+  const [firstCharacter, ...restOfTheCharacters] = stringToCapitalize.split('');
+
+  return [
+    firstCharacter
+      .toUpperCase(),
+    ...restOfTheCharacters
+  ]
+    .join('');
+}

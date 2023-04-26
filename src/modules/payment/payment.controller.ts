@@ -31,11 +31,22 @@ export class PaymentController {
     @GetCurrentUser() userData: CreateCustomerUserData,
     @Body() attachPaymentMethodPayload: RegisterPaymentMethodDto,
   ) {
-    return this.paymentService
-      .attachPaymentPethod(
-        userData,
-        attachPaymentMethodPayload,
-      );
+    const methodCreated = await this.paymentService.createPaymentMethod(
+      userData,
+      attachPaymentMethodPayload,
+    );
+
+    const {
+      customerId,
+    } = attachPaymentMethodPayload;
+
+    const attached = this.paymentService
+      .attachPaymentPethod({
+        customerId,
+        paymentMethodData: methodCreated,
+      });
+
+    return attached;
   }
 
   @Get()

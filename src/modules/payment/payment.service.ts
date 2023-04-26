@@ -7,6 +7,7 @@ import { Role } from 'src/common/enums';
 import { AttachMethodCustomerData, CreateCustomerUserData, CreateStripeCustomer } from './thirdparty/stripe/types';
 import { RegisterPaymentMethodDto } from './dto/register-payment-method.dto';
 import { Constants } from 'src/common/constants';
+import Stripe from 'stripe';
 
 
 @Injectable()
@@ -28,19 +29,22 @@ export class PaymentService {
     return await this.payments.addUser(userData, options);
   }
 
-  async attachPaymentPethod(
+  async createPaymentMethod(
     userData: CreateCustomerUserData,
     attachPaymentMethodPayload: RegisterPaymentMethodDto
   ) {
-    const stripeCustomer = await this.getUserByEmail(userData.email);
+    const { email } = userData;
+
+    const stripeCustomer = await this.payments.getCustomerByEmail(email);
 
     if (!stripeCustomer)
       throw new NotFoundException(Constants.ErrorMessages.STRIPE_CUSTOMER_NOT_REGISTERED);
 
-    return await this.payments.attachPaymentMethodToCustomer({
-      customerId: stripeCustomer.id,
-      ...attachPaymentMethodPayload,
-    });
+    return await this.payments.createPaymentMethodForCustomer(attachPaymentMethodPayload);
+  }
+
+  async attachPaymentPethod(paymentMethodData: AttachMethodCustomerData) {
+    return await this.payments.attachPaymentMethodToCustomer(paymentMethodData);
   }
 
   findAll() {

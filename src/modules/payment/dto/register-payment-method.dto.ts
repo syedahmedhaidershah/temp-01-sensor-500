@@ -1,10 +1,7 @@
-import { IsJSON, IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsObject, IsString } from "class-validator";
+import Stripe from "stripe";
 
-class PaymentMethodObject {
-    id: string;
-
-    [keys: string]: unknown;
-}
+type PaymentMethodObject = Stripe.PaymentMethodCreateParams.Card1;
 
 export class RegisterPaymentMethodDto {
 
@@ -13,6 +10,6 @@ export class RegisterPaymentMethodDto {
     customerId: string;
 
     @IsNotEmpty()
-    @IsJSON()
+    @IsObject()
     paymentMethod: PaymentMethodObject;
 }

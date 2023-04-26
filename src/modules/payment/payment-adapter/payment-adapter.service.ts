@@ -3,12 +3,10 @@ import { ConflictException, NotImplementedException } from '@nestjs/common/excep
 import { ThirdPartyPaymentServices } from '../enums';
 import { Constants } from 'src/common/constants';
 import { ConfirmPaymentData, CreateCustomerUserData, CreatePaymentIntentData, CreateStripeCustomer } from '../thirdparty/stripe/types';
-import { AttachMethodCustomerData } from '../thirdparty/stripe/types/attach-method-customer-data';
+import { AttachMethodCustomerData } from '../thirdparty/stripe/types/attach-method-customer-data.type';
 import { StripePaymentIntentService } from '../thirdparty';
-import { InjectModel } from '@nestjs/mongoose';
-import { StripeCustomer } from 'src/database/mongoose/schemas';
-import { Model } from 'mongoose';
-import { StripeCustomerType } from '../thirdparty/stripe/types/stripe-customer-schema.type';
+import { RegisterPaymentMethodDto } from '../dto/register-payment-method.dto';
+
 
 
 /** DRY-KISS Payment adaptee method */
@@ -19,11 +17,14 @@ const paymentAdapteeMethod = {
     startPaymentProcess: {
         stripe: 'createPaymentIntent'
     },
-    attachPaymentMethod: {
-        stripe: 'attachMethodToCustomer',
-    },
     ConfirmPaymentData: {
         stripe: 'confirmPayment',
+    },
+    attachPaymentMethodToCustomer: {
+        stripe: 'attachMethodToCustomer',
+    },
+    createPaymentMethodForCustomer: {
+        stripe: 'createPaymentMethod'
     }
 }
 
@@ -37,7 +38,6 @@ export class PaymentAdapterService {
      */
     constructor(
         private readonly stripe: StripePaymentIntentService,
-        @InjectModel(StripeCustomer.name) private readonly stripeCustomerModel: Model<StripeCustomerType>
     ) { }
 
     /**
@@ -64,19 +64,19 @@ export class PaymentAdapterService {
             options,
         );
 
-        const newStripeCustomer = new this.stripeCustomerModel({
-            ...added,
-            userId: data._id,
-        });
-
-        const saved = await newStripeCustomer.save();
-
-        return saved;
+        return added;
     }
 
     async startPaymentProcess(data: CreatePaymentIntentData) {
         return await this.methodResolver(
             this.startPaymentProcess.name,
+            data,
+        );
+    }
+
+    async createPaymentMethodForCustomer(data: RegisterPaymentMethodDto) {
+        return await this.methodResolver(
+            this.createPaymentMethodForCustomer.name,
             data,
         );
     }
@@ -98,7 +98,12 @@ export class PaymentAdapterService {
 
     async methodResolver(
         methodKeyInAdapteeMap: string,
-        data: CreateCustomerUserData | CreatePaymentIntentData | AttachMethodCustomerData | ConfirmPaymentData,
+        data: CreateCustomerUserData
+            | CreatePaymentIntentData
+            | AttachMethodCustomerData
+            | ConfirmPaymentData
+            | RegisterPaymentMethodDto
+            | AttachMethodCustomerData,
         options?: CreateStripeCustomer
     ) {
         const methodToUse = paymentAdapteeMethod

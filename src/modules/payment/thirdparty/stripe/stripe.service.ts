@@ -14,6 +14,10 @@ import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
 import { CacheService } from 'src/modules/cache/cache.service';
 import { UserType } from 'src/modules/users/types';
 import { CreateStripeCustomer } from './types';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { StripeCustomerType } from './types/stripe-customer-schema.type';
+import { StripeCustomer } from 'src/database/mongoose/schemas';
 
 
 
@@ -34,6 +38,7 @@ export class StripeService implements IStripeSerice {
 
     constructor(
         public readonly cache: CacheService,
+        @InjectModel(StripeCustomer.name) private readonly stripeCustomerModel: Model<StripeCustomerType>
     ) {
         if (!this.instance) {
 
@@ -46,14 +51,21 @@ export class StripeService implements IStripeSerice {
 
         (async () => {
             const list = await this.instance.customers.list({ limit: 100 });
-            console.log(list.data);
+            console.log('Deleting Stripe data: ', list.data.length);
             for await (const data of list.data) {
                 if (!data)
                     continue;
-
-                const deleted = await this.instance.customers.del(data.id);
-                console.log(deleted);
+                try {
+                    const deleted = await this.instance.customers.del(data.id);
+                    console.log(deleted);
+                } catch (exc) {
+                    break;
+                }
             }
+
+            const deleted = await this.stripeCustomerModel.deleteMany({});
+
+            console.log(deleted);
         })()
     }
 
@@ -62,6 +74,7 @@ export class StripeService implements IStripeSerice {
         options: CreateStripeCustomer,
     ) {
         const {
+            _id,
             username,
             email,
             phone_number: phone,
@@ -84,7 +97,15 @@ export class StripeService implements IStripeSerice {
             await this.cache.set(key, Customer, 0);
         }
 
-        return Customer;
+
+        const newStripeCustomer = new this.stripeCustomerModel({
+            ...Customer,
+            userId: _id,
+        });
+
+        const saved = await newStripeCustomer.save();
+
+        return saved;
     }
 
     async getCustomerByEmail(
@@ -101,5 +122,8 @@ export class StripeService implements IStripeSerice {
 export interface IStripeSerice {
     instance: stripe | undefined;
     cache: CacheService;
-    createStripeCustomer(data: UserType, options: CreateStripeCustomer): Promise<stripe.Response<stripe.Customer>>;
+    createStripeCustomer(
+        data: UserType,
+        options: CreateStripeCustomer
+    ): Promise<StripeCustomerType>;
 }
