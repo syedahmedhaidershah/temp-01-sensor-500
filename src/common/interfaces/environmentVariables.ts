@@ -33,4 +33,9 @@ export default interface EnvironmentVariables {
   readonly STRIPE_SECRET_KEY?: string;
   // Endpoint secret for webhook for local
   readonly STRIPE_ENDPOINT_SECRET_LOCAL?: string;
+  readonly SWAGGER_TITLE?: string;
+  readonly SWAGGER_DESCRIPTION?: string;
+  readonly SWAGGER_API_VERSION?: string;
+  readonly SWAGGER_BEARER_AUTH_IN?: string;
+  readonly SWAGGER_BEARER_AUTH_NAME?: string;
 }

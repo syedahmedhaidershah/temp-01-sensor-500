@@ -15,4 +15,5 @@ export const ErrorMessagesConstants = {
   LOCKED_ACCOUNT: 'Too many failed login attempts your account is locked for 2 minutes',
   STRIPE_CUSTOMER_ALREADY_EXISTS: 'Stripe customer already exists',
   STRIPE_CUSTOMER_NOT_REGISTERED: 'Stripe customer not registered',
+  INTERNAL_SERVER_ERROR: 'Internal server error',
 };
