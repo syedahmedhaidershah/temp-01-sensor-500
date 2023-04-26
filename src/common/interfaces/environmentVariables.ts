@@ -28,4 +28,9 @@ export default interface EnvironmentVariables {
   readonly MQTT_USERNAME?: string;
   readonly MQTT_PASSWORD?: string;
   readonly API_BASE?: string;
+  readonly SWAGGER_TITLE?: string;
+  readonly SWAGGER_DESCRIPTION?: string;
+  readonly SWAGGER_API_VERSION?: string;
+  readonly SWAGGER_BEARER_AUTH_IN?: string;
+  readonly SWAGGER_BEARER_AUTH_NAME?: string;
 }

@@ -16,7 +16,7 @@ import { Role } from 'src/common/enums';
 
 export class UserDto {
   @IsOptional()
-  _id: string;
+  _id?: string;
 
   @ValidateIf(dto => !dto.is_guest)
   @Transform(({ value }: TransformFnParams) => value?.trim())
