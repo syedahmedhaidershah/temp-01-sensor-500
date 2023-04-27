@@ -42,16 +42,13 @@ async function bootstrap() {
   );
   app.setGlobalPrefix(API_BASE);
   app.useGlobalPipes(new ValidationPipe());
-  app.use(helmet());
   app.useGlobalFilters(new AllExceptionsFilter());
 
   if (ENABLE_ALL_ORIGINS_BOOL) {
     app.enableCors();
   }
 
-  if (ENABLE_ALL_ORIGINS_BOOL) {
-    app.enableCors();
-  }
+  const swaggerPath = `/api/docs`;
 
   const config = new DocumentBuilder()
     .setTitle(SWAGGER_TITLE)
@@ -65,7 +62,9 @@ async function bootstrap() {
     .addSecurityRequirements('bearer')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup(swaggerPath, app, document);
+
+  app.use(helmet());
 
   return await app.listen(PORT);
 }
