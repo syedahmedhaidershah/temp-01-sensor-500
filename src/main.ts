@@ -42,7 +42,6 @@ async function bootstrap() {
   );
   app.setGlobalPrefix(API_BASE);
   app.useGlobalPipes(new ValidationPipe());
-  app.use(helmet());
   app.useGlobalFilters(new AllExceptionsFilter());
 
   if (ENABLE_ALL_ORIGINS_BOOL) {
@@ -64,6 +63,8 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(swaggerPath, app, document);
+
+  app.use(helmet());
 
   return await app.listen(PORT);
 }
