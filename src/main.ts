@@ -49,10 +49,6 @@ async function bootstrap() {
     app.enableCors();
   }
 
-  if (ENABLE_ALL_ORIGINS_BOOL) {
-    app.enableCors();
-  }
-
   const swaggerPath = `/api/docs`;
 
   const config = new DocumentBuilder()
