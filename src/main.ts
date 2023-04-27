@@ -53,7 +53,7 @@ async function bootstrap() {
     app.enableCors();
   }
 
-  const swaggerPath = `${API_BASE}/docs`;
+  const swaggerPath = `${API_BASE}/docs/`;
 
   const config = new DocumentBuilder()
     .setTitle(SWAGGER_TITLE)
