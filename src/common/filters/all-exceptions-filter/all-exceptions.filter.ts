@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 
 import { MongoErrors } from 'src/common/enums';
+import { CustoExceptionType } from '../exception-types';
 
 /**
  * Using dry-kiss for switching between handlers
@@ -100,9 +101,7 @@ const handlerMethods = {
 };
 
 
-type CustoExceptionType = InternalServerErrorException & {
-  type: string;
-}
+
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
