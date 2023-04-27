@@ -53,6 +53,8 @@ async function bootstrap() {
     app.enableCors();
   }
 
+  const swaggerPath = `${API_BASE}/docs`;
+
   const config = new DocumentBuilder()
     .setTitle(SWAGGER_TITLE)
     .setDescription(SWAGGER_DESCRIPTION)
@@ -65,7 +67,7 @@ async function bootstrap() {
     .addSecurityRequirements('bearer')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup(swaggerPath, app, document);
 
   return await app.listen(PORT);
 }
