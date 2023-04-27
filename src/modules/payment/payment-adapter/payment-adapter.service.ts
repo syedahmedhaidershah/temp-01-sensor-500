@@ -43,7 +43,9 @@ export class PaymentAdapterService {
     /**
      * Changes payment method
      */
-    async setMethod(method: ThirdPartyPaymentServices) {
+    async setMethod(
+        method: ThirdPartyPaymentServices
+    ): Promise<void> {
         this.method = method;
     }
 
