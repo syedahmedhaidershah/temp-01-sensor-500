@@ -196,6 +196,7 @@ export class AuthController {
 
   //* This is used to verify otp throughout the application *//
 
+  @Public()
   @Post('verify-otp')
   @ApiNotAcceptableResponse({ description: Constants.ErrorMessages.INCORRECT_OTP })
   @HttpCode(HttpStatus.OK)
