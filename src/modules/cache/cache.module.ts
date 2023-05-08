@@ -18,7 +18,7 @@ const CACHE_ISGLOBAL_BOOL = JSON.parse(CACHE_ISGLOBAL as string);
     CacheModule.register({
       store: redisStore,
       host: CACHE_HOST,
-      port: Number(CACHE_PORT),
+      port: +CACHE_PORT,
       isGlobal: CACHE_ISGLOBAL_BOOL,
     }),
   ],

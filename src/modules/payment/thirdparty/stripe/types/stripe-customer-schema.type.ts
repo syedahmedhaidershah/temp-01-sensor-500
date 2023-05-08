@@ -15,6 +15,7 @@ export interface InvoiceSettingsType {
 
 export interface StripeCustomerType extends Document {
     id: string;
+    userId: string;
     object: StripeResponse;
     address: string;
     balance: number;

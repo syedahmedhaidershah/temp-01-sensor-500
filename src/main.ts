@@ -13,7 +13,10 @@ import helmet from 'helmet';
 import { AllExceptionsFilter } from 'src/common/filters';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-async function bootstrap() {
+async function bootstrap(): Promise<
+  import('http').Server
+  | import('https').Server
+> {
   dotenv.config();
   /** Setting up environment from env files if it exists */
 

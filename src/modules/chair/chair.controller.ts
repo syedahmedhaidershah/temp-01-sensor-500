@@ -16,20 +16,18 @@ import { ChairService } from './chair.service';
 import { CreateChairDto, UpdateChairDto } from './dto';
 import { ChairType, PartialChairType } from './types';
 import { Role } from 'src/common/enums';
-import { Chair } from 'src/database/mongoose/schemas';
 import { Authorization } from 'src/common/decorators';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Chair')
-// @ApiBearerAuth()
 @Authorization(Role.Admin)
 @Controller('chair')
 export class ChairController {
-  constructor(private readonly chairService: ChairService) {}
+  constructor(private readonly chairService: ChairService) { }
 
   @Public()
   @Get('health-check')
-  async healthCheck() {
+  async healthCheck(): Promise<string> {
     return 'ok';
   }
 
@@ -52,7 +50,10 @@ export class ChairController {
 
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  update(@Param('id') id: string, @Body() updateChairDto: UpdateChairDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateChairDto: UpdateChairDto
+  ): Promise<ChairType> {
     return this.chairService.update(id, updateChairDto);
   }
 

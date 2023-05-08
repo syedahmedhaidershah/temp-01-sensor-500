@@ -6,9 +6,9 @@ import { MqttClientService } from 'src/common/services';
 
 @Injectable()
 export class MqttService {
-  constructor(private readonly mqtt: MqttClientService) {}
+  constructor(private readonly mqtt: MqttClientService) { }
 
-  testService = async () => {
+  testService = async (): Promise<void> => {
     const connection = await this.mqtt.getClient();
 
     connection.on('message', (topic, message) => {

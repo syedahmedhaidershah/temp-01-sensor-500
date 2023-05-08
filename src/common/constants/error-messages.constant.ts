@@ -16,4 +16,5 @@ export const ErrorMessagesConstants = {
   STRIPE_CUSTOMER_ALREADY_EXISTS: 'Stripe customer already exists',
   STRIPE_CUSTOMER_NOT_REGISTERED: 'Stripe customer not registered',
   INTERNAL_SERVER_ERROR: 'Internal server error',
+  STRIPE_ID_CUSTOMER_ID_MISMATCH: 'Customer Id & Provided Stripe customer Id did not match',
 };

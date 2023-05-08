@@ -11,7 +11,12 @@ dotenv.config();
 const { CRYPTO_ENCRYPTION_ALGORITHM, CRYPTO_DIGEST_METHOD, BCRYPT_SALT_ROUND } =
   process.env as EnvironmentVariables;
 
-export const hashData = (data: string) => {
+/**
+ * Provides a hashed string for input string, Bcrypt & Crypto library is being used
+ */
+export const hashData = (
+  data: string
+): Promise<string> => {
   const hash = crypto
     .createHash(CRYPTO_ENCRYPTION_ALGORITHM)
     .update(data)
@@ -19,7 +24,13 @@ export const hashData = (data: string) => {
   return bcrypt.hash(hash, Number(BCRYPT_SALT_ROUND));
 };
 
-export const compareHashed = (data: string, hashedData: string) => {
+/**
+ * Compares hashed string for input string, Crypto library is being used
+ */
+export const compareHashed = (
+  data: string,
+  hashedData: string
+): Promise<boolean> => {
   const hash = crypto
     .createHash(CRYPTO_ENCRYPTION_ALGORITHM)
     .update(data)
@@ -27,6 +38,7 @@ export const compareHashed = (data: string, hashedData: string) => {
 
   return bcrypt.compare(hash, hashedData);
 };
+
 
 export const checkIfAdmin = (roles: string[]): boolean => {
   const { Roles } = Constants;

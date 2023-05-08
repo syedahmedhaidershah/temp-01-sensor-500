@@ -62,6 +62,7 @@ export class AuthService {
 
     const tokens = await this.getTokensAndUpdateRtHash(user, Constants.USER);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...responseUser } = user;
 
     return {
@@ -76,6 +77,7 @@ export class AuthService {
 
     const tokens = await this.getTokensAndUpdateRtHash(user, Constants.ADMIN);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...responseUser } = user;
 
     return {
@@ -91,6 +93,7 @@ export class AuthService {
       const createdUser = await this.usersService.createUser(userDto);
       const tokens = await this.getTokensAndUpdateRtHash(createdUser, Constants.USER);
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...responseUser } = createdUser;
 
       return {
@@ -111,6 +114,7 @@ export class AuthService {
 
     const tokens = await this.getTokensAndUpdateRtHash(createdUser, Constants.USER);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...responseUser } = createdUser;
 
     return {
@@ -136,7 +140,9 @@ export class AuthService {
 
     await this.generateOtp({ email: createdUser.email, subject: Constants.EMAIL_SUBJECT });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...responseUser } = createdUser;
+
     return {
       user: responseUser,
       tokens,

@@ -6,14 +6,17 @@ import { ResourceLockedException } from 'src/common/exceptions';
 import Stripe from 'stripe';
 import { PaymentMethodTypes } from 'src/modules/payment/enums';
 import { capitalize } from 'src/utilities';
+import { RegisterPaymentMethodDto } from 'src/modules/payment/dto/register-payment-method.dto';
 
 @Injectable()
 export class StripePaymentIntentService extends StripeService {
 
-    async createPaymentMethod(data) {
+    async createPaymentMethod(
+        data: RegisterPaymentMethodDto
+    ): Promise<Stripe.Response<Stripe.PaymentMethod>> {
         const {
+            paymentMethodType: type,
             paymentMethod: {
-                type,
                 ...cardDetails
             },
         } = data;
@@ -28,40 +31,9 @@ export class StripePaymentIntentService extends StripeService {
         return method;
     }
 
-    async createPaymentIntent(
-        data: CreatePaymentIntentData,
-    ) {
-        const {
-            user,
-            payment,
-        } = data;
-
-        const getIntent = this.cache.get(user._id);
-
-        if (getIntent)
-            throw new ResourceLockedException(Constants.ErrorMessages.PAYMENT_ALREADY_INPROGRESS);
-
-        const {
-            payment_method,
-            confirmation_method,
-        } = payment;
-
-        const paymentIntent = await this.instance.paymentIntents.create(payment);
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const cached = await this.cache.set(
-            user._id
-                .concat(payment_method)
-                .concat(confirmation_method),
-            paymentIntent
-        )
-
-        return paymentIntent;
-    }
-
     async attachMethodToCustomer(
         data: AttachMethodCustomerData
-    ) {
+    ): Promise<Stripe.Response<Stripe.PaymentMethod>> {
         const {
             customerId: customer,
             paymentMethodData: { id: paymentMethodId }
@@ -77,9 +49,55 @@ export class StripePaymentIntentService extends StripeService {
         return paymentMethodAttached;
     }
 
+    async createPaymentIntent(
+        data: CreatePaymentIntentData,
+    ): Promise<Stripe.Response<Stripe.PaymentIntent>> {
+        const {
+            user,
+            payment,
+        } = data;
+
+        const getIntent = await this.cache.get(user._id);
+
+        if (getIntent)
+            throw new ResourceLockedException(Constants.ErrorMessages.PAYMENT_ALREADY_INPROGRESS);
+
+        const {
+            customerId: customer,
+            paymentMethodId: payment_method,
+            confirmation_method,
+            ...rest
+        } = payment;
+
+        const paymentObject = {
+            ...rest,
+            customer,
+            payment_method,
+        };
+
+        const paymentIntent = await this.instance.paymentIntents.create(paymentObject);
+
+        const cacheKey = [
+            user._id,
+            payment_method,
+            confirmation_method,
+        ]
+            .join('-');
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const cached = await this.cache.set(
+            cacheKey,
+            paymentIntent,
+            // setting 1 hour expiry
+            (1000 * 60 * 60)
+        )
+
+        return paymentIntent;
+    }
+
     async confirmPayment(
         data: ConfirmPaymentData,
-    ) {
+    ): Promise<Stripe.Response<Stripe.PaymentIntent>> {
         const {
             paymentIntentId,
             paymentMethod

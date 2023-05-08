@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -8,31 +8,36 @@ import { AttachMethodCustomerData, CreateCustomerUserData, CreateStripeCustomer 
 import { RegisterPaymentMethodDto } from './dto/register-payment-method.dto';
 import { Constants } from 'src/common/constants';
 import Stripe from 'stripe';
+import { Document } from 'mongoose';
+import { StripeCustomerType } from './thirdparty/stripe/types/stripe-customer-schema.type';
+import { UserType } from '../users/types';
 
 
 @Injectable()
 export class PaymentService {
 
   constructor(
-    private readonly payments: PaymentAdapterService
+    private readonly payments: PaymentAdapterService,
   ) {
   }
 
-  async getUserByEmail(email: string) {
+  async getUserByEmail(
+    email: string,
+  ): Promise<Stripe.Customer> {
     return await this.payments.getCustomerByEmail(email);
   }
 
   async addUser(
     userData: CreateCustomerUserData,
     options: CreateStripeCustomer,
-  ) {
+  ): Promise<StripeCustomerType & Document> {
     return await this.payments.addUser(userData, options);
   }
 
-  async createPaymentMethod(
+  async createPaymentMethodForCustomer(
     userData: CreateCustomerUserData,
     attachPaymentMethodPayload: RegisterPaymentMethodDto
-  ) {
+  ): Promise<Stripe.Response<Stripe.PaymentMethod>> {
     const { email } = userData;
 
     const stripeCustomer = await this.payments.getCustomerByEmail(email);
@@ -40,26 +45,46 @@ export class PaymentService {
     if (!stripeCustomer)
       throw new NotFoundException(Constants.ErrorMessages.STRIPE_CUSTOMER_NOT_REGISTERED);
 
-    return await this.payments.createPaymentMethodForCustomer(attachPaymentMethodPayload);
+    const methodCreated = await this.payments.createPaymentMethodForCustomer(attachPaymentMethodPayload);
+
+    const {
+      customerId,
+    } = attachPaymentMethodPayload;
+
+    const attached = this
+      .attachPaymentPethod({
+        customerId,
+        paymentMethodData: methodCreated,
+      });
+
+    return attached;
   }
 
-  async attachPaymentPethod(paymentMethodData: AttachMethodCustomerData) {
+  async attachPaymentPethod(
+    paymentMethodData: AttachMethodCustomerData
+  ): Promise<Stripe.Response<Stripe.PaymentMethod>> {
     return await this.payments.attachPaymentMethodToCustomer(paymentMethodData);
   }
 
-  findAll() {
-    return `This action returns all payment`;
-  }
+  async createPayment(
+    userData: UserType,
+    createPaymentPayload: CreatePaymentDto,
+  ): Promise<Stripe.Response<Stripe.PaymentIntent>> {
+    const { _id: userId, } = userData;
 
-  findOne(id: number) {
-    return `This action returns a #${id} payment`;
-  }
+    const { customerId, } = createPaymentPayload;
 
-  update(id: number, updatePaymentDto: UpdatePaymentDto) {
-    return `This action updates a #${id} payment`;
-  }
+    const foundCustomer = await this.payments
+      .getCustomerByIds({ customerId, _id: userId })
 
-  remove(id: number) {
-    return `This action removes a #${id} payment`;
+    if (!foundCustomer)
+      throw new UnprocessableEntityException(Constants.ErrorMessages.STRIPE_ID_CUSTOMER_ID_MISMATCH);
+
+    const newPaymentIntent = await this.payments.startPaymentProcess({
+      user: userData,
+      payment: createPaymentPayload,
+    });
+
+    return newPaymentIntent;
   }
 }

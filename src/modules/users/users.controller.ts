@@ -1,9 +1,9 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query } from '@nestjs/common';
-import { Authorization, Public } from 'src/common/decorators';
+import { Authorization } from 'src/common/decorators';
 import { UsersService } from './users.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { Role } from 'src/common/enums';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Users')
 // @ApiBearerAuth()
@@ -13,14 +13,18 @@ export class UserController {
 
   @Post('change-password')
   @HttpCode(HttpStatus.CREATED)
-  async changeUserPassword(@Body() changedPasswordDto: ChangePasswordDto) {
+  async changeUserPassword(
+    @Body() changedPasswordDto: ChangePasswordDto
+  ): Promise<boolean> {
     return this.userService.changeUserPassword(changedPasswordDto);
   }
 
   @Authorization(Role.Admin, Role.SuperAdmin)
   @Post('change-password/admin')
   @HttpCode(HttpStatus.CREATED)
-  async changeAdminPassword(@Body() changedPasswordDto: ChangePasswordDto) {
+  async changeAdminPassword(
+    @Body() changedPasswordDto: ChangePasswordDto
+  ): Promise<boolean> {
     return this.userService.changeAdminPassword(changedPasswordDto);
   }
 

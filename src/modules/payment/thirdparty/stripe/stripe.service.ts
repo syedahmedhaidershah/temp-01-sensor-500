@@ -15,9 +15,10 @@ import { CacheService } from 'src/modules/cache/cache.service';
 import { UserType } from 'src/modules/users/types';
 import { CreateStripeCustomer } from './types';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Document, Model } from 'mongoose';
 import { StripeCustomerType } from './types/stripe-customer-schema.type';
 import { StripeCustomer } from 'src/database/mongoose/schemas';
+import { CreatePaymentDto } from '../../dto/create-payment.dto';
 
 
 
@@ -49,30 +50,36 @@ export class StripeService implements IStripeSerice {
                 });
         }
 
-        (async () => {
-            const list = await this.instance.customers.list({ limit: 100 });
-            console.log('Deleting Stripe data: ', list.data.length);
-            for await (const data of list.data) {
-                if (!data)
-                    continue;
-                try {
-                    const deleted = await this.instance.customers.del(data.id);
-                    console.log(deleted);
-                } catch (exc) {
-                    break;
-                }
-            }
+        /**
+         * @note REMOVE after development of GRX-55
+         * @note Test flow for automicatically removing customers after changes made
+         * [GRX-55]{@link https://cloudprimero.atlassian.net/browse/GRX-55?atlOrigin=eyJpIjoiYzRlZmI0ZjI0N2MwNGQ5MTg0NmZmMjg4NWQzNzk5MjUiLCJwIjoiaiJ9}
+         */
+        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+        // (async () => {
+        //     const list = await this.instance.customers.list({ limit: 100 });
+        //     console.log('Deleting Stripe data: ', list.data.length);
+        //     for await (const data of list.data) {
+        //         if (!data)
+        //             continue;
+        //         try {
+        //             const deleted = await this.instance.customers.del(data.id);
+        //             console.log(deleted);
+        //         } catch (exc) {
+        //             break;
+        //         }
+        //     }
 
-            const deleted = await this.stripeCustomerModel.deleteMany({});
+        //     const deleted = await this.stripeCustomerModel.deleteMany({});
 
-            console.log(deleted);
-        })()
+        //     console.log(deleted);
+        // })()
     }
 
     async createStripeCustomer(
         data: UserType,
         options: CreateStripeCustomer,
-    ) {
+    ): Promise<StripeCustomerType & Document> {
         const {
             _id,
             username,
@@ -117,13 +124,31 @@ export class StripeService implements IStripeSerice {
 
         return customer || null;
     }
+
+    async getCustomerByUserAndCustomerId(
+        data: UserType & CreatePaymentDto
+    ): Promise<StripeCustomerType & Partial<Document> | null> {
+
+        const {
+            _id: userId,
+            customerId: id,
+        } = data;
+
+        const customerFound = await this.stripeCustomerModel.findOne({
+            // Object Id for actual user
+            userId,
+            // Stripe Customer Id in stripe customers collection
+            id,
+        });
+
+        return customerFound;
+    }
 }
 
 export interface IStripeSerice {
     instance: stripe | undefined;
     cache: CacheService;
-    createStripeCustomer(
-        data: UserType,
-        options: CreateStripeCustomer
-    ): Promise<StripeCustomerType>;
+    createStripeCustomer(data: UserType, options: CreateStripeCustomer): Promise<StripeCustomerType & Document>;
+    getCustomerByEmail(email: string): Promise<stripe.Customer | null>;
+    getCustomerByUserAndCustomerId(data: UserType & CreatePaymentDto): Promise<StripeCustomerType & Partial<Document> | null>;
 }

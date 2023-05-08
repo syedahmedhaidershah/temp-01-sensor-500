@@ -1,5 +1,6 @@
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
+import { isJSON } from 'class-validator';
 import * as dotenv from 'dotenv';
 import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
 
@@ -34,7 +35,7 @@ export class CacheService {
 
 
   /** Flushes / resets the cache */
-  async flush() {
+  async flush(): Promise<void> {
     await this.cacheManager.reset();
   }
 }

@@ -22,7 +22,9 @@ export class AccessTokenStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: JwtPayloadType) {
+  async validate(
+    payload: JwtPayloadType
+  ): Promise<JwtPayloadType> {
     return payload;
   }
 }

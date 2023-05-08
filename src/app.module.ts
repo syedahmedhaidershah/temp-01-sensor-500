@@ -21,6 +21,8 @@ import { PaymentModule } from './modules/payment/payment.module';
 
 /** Local constants and statics */
 import EnvironmentVariables from './common/interfaces/environmentVariables';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 /** Local configuration and declarations */
 /** Setting up environment from env files if it exists, and environment isn't loaded */
@@ -50,13 +52,18 @@ const toExclueRouteInfosFromcheckExpiredToken: RouteInfo[] = [
     ChairModule,
     RedisCacheModule,
     PaymentModule,
+    ServeStaticModule
+      .forRoot({
+        renderPath: '/test-www',
+        rootPath: join(__dirname, '.', 'static/www/dist')
+      })
   ],
   controllers: [AppController],
   providers: [AppService, JwtAuthGuardProvider, ResponseInterceptorProvider],
 })
 export class AppModule implements NestModule {
   /** Configuring middlewares */
-  configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer): void {
     /** Enabling logger for local development */
     if (NODE_ENV === 'devlocal') {
       consumer.apply(MorganLoggerMiddleware).forRoutes('/');

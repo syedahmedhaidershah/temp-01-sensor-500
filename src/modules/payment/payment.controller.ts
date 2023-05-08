@@ -1,11 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, } from '@nestjs/common';
+import { Controller, Post, Body, Patch } from '@nestjs/common';
 import { PaymentService } from './payment.service';
-import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { Authorization, GetCurrentUser } from 'src/common/decorators';
 import { Role } from 'src/common/enums';
 import { CreateCustomerUserData } from './thirdparty/stripe/types';
 import { RegisterPaymentMethodDto } from './dto/register-payment-method.dto';
+import Stripe from 'stripe';
+import { Document } from 'mongoose';
+import { StripeCustomerType } from './thirdparty/stripe/types/stripe-customer-schema.type';
+import { CreatePaymentDto } from './dto/create-payment.dto';
+import { UserType } from '../users/types';
 
 @Controller('payment')
 export class PaymentController {
@@ -17,7 +20,7 @@ export class PaymentController {
   @Post('register/user')
   create(
     @GetCurrentUser() userData: CreateCustomerUserData
-  ) {
+  ): Promise<StripeCustomerType & Document> {
     return this.paymentService
       .addUser(
         userData,
@@ -30,42 +33,22 @@ export class PaymentController {
   async registerPaymentMethodForUser(
     @GetCurrentUser() userData: CreateCustomerUserData,
     @Body() attachPaymentMethodPayload: RegisterPaymentMethodDto,
-  ) {
-    const methodCreated = await this.paymentService.createPaymentMethod(
+  ): Promise<Stripe.Response<Stripe.PaymentMethod>> {
+    const methodCreated = await this.paymentService.createPaymentMethodForCustomer(
       userData,
       attachPaymentMethodPayload,
     );
 
-    const {
-      customerId,
-    } = attachPaymentMethodPayload;
-
-    const attached = this.paymentService
-      .attachPaymentPethod({
-        customerId,
-        paymentMethodData: methodCreated,
-      });
-
-    return attached;
+    return methodCreated;
   }
 
-  @Get()
-  findAll() {
-    return this.paymentService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.paymentService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePaymentDto: UpdatePaymentDto) {
-    return this.paymentService.update(+id, updatePaymentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.paymentService.remove(+id);
+  @Authorization(Role.User, Role.Vacationer)
+  @Post()
+  async createPayment(
+    @GetCurrentUser() userData: UserType,
+    @Body() createPaymentPayload: CreatePaymentDto,
+  ): Promise<Stripe.Response<Stripe.PaymentIntent>> {
+    const created = await this.paymentService.createPayment(userData, createPaymentPayload);
+    return created;
   }
 }
