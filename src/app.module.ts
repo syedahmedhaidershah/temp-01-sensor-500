@@ -58,7 +58,7 @@ const toExclueRouteInfosFromcheckExpiredToken: RouteInfo[] = [
         rootPath: join(
           __dirname,
           '..',
-          'public/www/build',
+          'public/stripe-checkout-test/build',
         ),
         exclude: ['/api/(.*)'],
       })
