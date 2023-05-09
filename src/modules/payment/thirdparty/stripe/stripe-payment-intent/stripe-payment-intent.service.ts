@@ -49,6 +49,16 @@ export class StripePaymentIntentService extends StripeService {
         return paymentMethodAttached;
     }
 
+    async getPaymentMethodsList(
+        data: Partial<RegisterPaymentMethodDto>
+    ): Promise<Array<Stripe.PaymentMethod>> {
+        const { customerId: customer } = data;
+
+        const { data: methodsListArray } = await this.instance.paymentMethods.list({ customer });
+
+        return methodsListArray;
+    }
+
     async createPaymentIntent(
         data: CreatePaymentIntentData,
     ): Promise<Stripe.Response<Stripe.PaymentIntent>> {
@@ -72,10 +82,17 @@ export class StripePaymentIntentService extends StripeService {
         const paymentObject = {
             ...rest,
             customer,
-            payment_method,
+            // payment_method,
         };
 
-        const paymentIntent = await this.instance.paymentIntents.create(paymentObject);
+        const paymentIntent = await this.instance.paymentIntents.create(
+            {
+                ...paymentObject,
+                automatic_payment_methods: {
+                    enabled: true,
+                }
+            }
+        );
 
         const cacheKey = [
             user._id,

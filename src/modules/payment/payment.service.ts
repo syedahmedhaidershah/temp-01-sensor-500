@@ -1,9 +1,6 @@
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
-import { RegisterUserDto } from './dto/register-user.dto';
 import { PaymentAdapterService } from './payment-adapter/payment-adapter.service';
-import { Role } from 'src/common/enums';
 import { AttachMethodCustomerData, CreateCustomerUserData, CreateStripeCustomer } from './thirdparty/stripe/types';
 import { RegisterPaymentMethodDto } from './dto/register-payment-method.dto';
 import { Constants } from 'src/common/constants';
@@ -65,6 +62,24 @@ export class PaymentService {
   ): Promise<Stripe.Response<Stripe.PaymentMethod>> {
     return await this.payments.attachPaymentMethodToCustomer(paymentMethodData);
   }
+
+  async getPaymentMethods(
+    userData: UserType
+  ): Promise<Array<Stripe.PaymentMethod>> {
+
+    const { email } = userData;
+
+    const stripeCustomer = await this.payments.getCustomerByEmail(email);
+
+    if (!stripeCustomer)
+      throw new NotFoundException(Constants.ErrorMessages.STRIPE_CUSTOMER_NOT_REGISTERED);
+
+    const { id: customerId } = stripeCustomer;
+
+    return await this.payments.getPaymentMethodsList({ customerId });
+  }
+
+
 
   async createPayment(
     userData: UserType,

@@ -27,7 +27,7 @@ export class CreatePaymentDto {
 
     @IsEnum(ConfirmationMethod)
     @IsString()
-    confirmation_method?: ConfirmationMethod = ConfirmationMethod.Manual;
+    confirmation_method?: ConfirmationMethod = ConfirmationMethod.Automatic;
 
     @IsString()
     description?: string = '';

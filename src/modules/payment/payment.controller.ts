@@ -1,7 +1,7 @@
-import { Controller, Post, Body, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Get, HttpCode, Query } from '@nestjs/common';
 import { PaymentService } from './payment.service';
-import { Authorization, GetCurrentUser } from 'src/common/decorators';
-import { Role } from 'src/common/enums';
+import { Authorization, GetCurrentUser, Public } from 'src/common/decorators';
+import { HttpStatus, Role } from 'src/common/enums';
 import { CreateCustomerUserData } from './thirdparty/stripe/types';
 import { RegisterPaymentMethodDto } from './dto/register-payment-method.dto';
 import Stripe from 'stripe';
@@ -50,5 +50,22 @@ export class PaymentController {
   ): Promise<Stripe.Response<Stripe.PaymentIntent>> {
     const created = await this.paymentService.createPayment(userData, createPaymentPayload);
     return created;
+  }
+
+  @Authorization(Role.User, Role.Vacationer)
+  @Get('methods')
+  async getPaymentMethods(
+    @GetCurrentUser() userData: UserType,
+  ): Promise<Array<Stripe.PaymentMethod>> {
+    return await this.paymentService.getPaymentMethods(userData);
+  }
+
+  @Public()
+  @Get('confirm')
+  @HttpCode(HttpStatus.OK)
+  async confirmPayment(
+    @Query() createPaymentQueryParams: any,
+  ): Promise<any> {
+    return { createPaymentQueryParams }
   }
 }

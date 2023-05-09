@@ -100,7 +100,7 @@ const handlerMethods = {
       /**
        * @note  Default status is either the exception retrieved status code, otherwise INTERNAL_SERVER_ERROR if not present
        */
-      statusCode: exception?.getStatus() || HttpStatus.INTERNAL_SERVER_ERROR,
+      statusCode: exception.status || exception?.getStatus() || HttpStatus.INTERNAL_SERVER_ERROR,
     };
   },
 };

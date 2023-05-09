@@ -32,6 +32,9 @@ const paymentAdapteeMethod = {
     },
     getCustomerByIds: {
         stripe: 'getCustomerByUserAndCustomerId',
+    },
+    getPaymentMethodsList: {
+        stripe: 'getPaymentMethodsList',
     }
 }
 
@@ -133,6 +136,22 @@ export class PaymentAdapterService {
         return attachedPaymentMethodObject;
     }
 
+    async getPaymentMethodsList(
+        data: Partial<RegisterPaymentMethodDto>,
+    ): Promise<Array<Stripe.PaymentMethod>> {
+        /**
+        * @note For help, In VS-Code, "CTRL+P" or "CMD+P" will let you open a file by path or name
+        * @see {@link src\modules\payment\thirdparty\stripe\stripe-payment-intent.service.ts}
+        */
+        const attachedPaymentMethodObject = await this.methodResolver(
+            this.getPaymentMethodsList.name,
+            data,
+        ) as Array<Stripe.PaymentMethod>;
+
+        return attachedPaymentMethodObject;
+    }
+
+
     async confirmPaymentProcess(
         data: ConfirmPaymentData
     ): Promise<Stripe.Response<Stripe.PaymentIntent>> {
@@ -173,6 +192,7 @@ export class PaymentAdapterService {
             | Stripe.PaymentIntent
             | Stripe.PaymentMethod
         >
+        | Array<Stripe.PaymentMethod>
     > {
         const methodToUse = paymentAdapteeMethod
         [methodKeyInAdapteeMap]
