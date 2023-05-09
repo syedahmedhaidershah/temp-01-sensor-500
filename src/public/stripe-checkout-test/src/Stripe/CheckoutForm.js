@@ -6,8 +6,18 @@ import {
     useElements,
 } from "@stripe/react-stripe-js";
 
+
+const captureMethodConfirmationsURIs = {
+    manual: 'http://localhost:3000/api/v1/payment/confirm',
+    automatic: 'http://localhost:3000/api/v1/payment/confirmed-automatic'
+}
+
 export default function CheckoutForm(props) {
-    const { currency } = props;
+    const {
+        currency,
+        clientSecret,
+        captureMethod
+    } = props;
 
     const stripe = useStripe();
     const elements = useElements();
@@ -20,8 +30,6 @@ export default function CheckoutForm(props) {
         if (!stripe) {
             return;
         }
-
-        const { client_secret: clientSecret } = localStorage;
 
         if (!clientSecret) {
             return;
@@ -71,7 +79,7 @@ export default function CheckoutForm(props) {
             elements,
             confirmParams: {
                 // Make sure to change this to your payment completion page
-                return_url: "http://localhost:3000/api/v1/payment/confirm",
+                return_url: captureMethodConfirmationsURIs[captureMethod],
             },
         });
 

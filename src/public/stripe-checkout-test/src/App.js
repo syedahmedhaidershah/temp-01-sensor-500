@@ -31,6 +31,21 @@ export default function App() {
 
   const [token, setToken] = useState('');
 
+  const [captureMethod, setCaptureMethod] = useState('automatic');
+
+  const [isLoading, setLoading] = useState(true);
+
+  const [paymentSuccessful, setPaymentSuccessful] = useState(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const payment = params.get('payment');
+
+    setPaymentSuccessful(payment);
+
+    setLoading(false);
+  }, []);
+
   const appearance = {
     theme: 'stripe',
   };
@@ -67,33 +82,35 @@ export default function App() {
         ),
       });
 
-      const paymentMethods = fetch("http://localhost:3000/api/v1/payment/methods", {
-        method: "GET",
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer '.concat(token)
-        }
-      });
+      // const paymentMethods = fetch("http://localhost:3000/api/v1/payment/methods", {
+      //   method: "GET",
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     Authorization: 'Bearer '.concat(token)
+      //   }
+      // });
 
 
 
       const [fetched] = await Promise.all([
-        paymentIntent
+        paymentIntent,
       ])
 
       // eslint-disable-next-line no-unused-vars
       const {
-        data, data: {
-          client_secret: clientSecret
+        data,
+        data: {
+          client_secret: useClientSecret,
+          capture_method,
         }
       } = await fetched.json();
 
       setPaymentIntent(JSON.stringify(data));
 
-      localStorage.setItem('client_secret', clientSecret);
+      setCaptureMethod(capture_method)
 
       // eslint-disable-next-line no-unused-vars
-      const secretSet = await setClientSecret(clientSecret);
+      setClientSecret(useClientSecret);
     } catch (exc) {
       console.log(exc)
     }
@@ -104,52 +121,72 @@ export default function App() {
   }
 
   return (
-    <div>
-      <h1>Payment test</h1>
-      <div className="App" style={{
-        width: '500px',
-        overflowWrap: 'break-word',
-        fontSize: '0.7rem',
-        padding: '1rem'
-      }}>
-        <form onSubmit={formHandler} style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between'
-        }}>
-          <select
-            style={{ margin: '3px' }}
-            onChange={({ target: { value } }) => setCurrency(value)}>
-            {currencies
-              .map(currency => <option value={currency}>{currency}</option>)}
-          </select>
-          <input
-            type="number"
-            min="1"
-            max="100000"
-            placeholder="Enter currency"
-            style={{ margin: '3px' }}
-            onChange={({ target: { value } }) => setValue(value)} />
-          <input
-            placeholder="Auth token"
-            style={{ margin: '3px' }}
-            onChange={({ target: { value } }) => setToken(value)} />
-        </form>
+    paymentSuccessful
+      ? <div>
+        <h1>
+          'Payment Successful'
+        </h1>
         <button
-          onClick={createIntent}
-        >Start Payment</button>
-        {!isPaymentIntentReceived && isRetrievingIntent
-          && <div style={{ fontSize: '3rem', color: 'black' }}>... Retrieving</div>}
-        {isPaymentIntentReceived
-          && <div style={{ padding: '1rem', margin: '1px' }}>In process</div>}
-        {clientSecret && (console.log(options, stripePromise) || true) && (
-          <Elements options={options} stripe={stripePromise}>
-            <CheckoutForm
-              currency={currency}
-            />
-          </Elements>
-        )}
-      </div>
-    </div>
+          onClick={() => {
+            const params = new URLSearchParams();
+
+            params.delete('payment');
+            setPaymentSuccessful(null);
+            window.location.href = window.location.origin;
+          }}>
+          Try another payment
+        </button>
+      </div >
+      : !isLoading
+        ? <div>
+          <h1>Payment test</h1>
+          <div className="App" style={{
+            width: '500px',
+            overflowWrap: 'break-word',
+            fontSize: '0.7rem',
+            padding: '1rem'
+          }}>
+            <form onSubmit={formHandler} style={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between'
+            }}>
+              <select
+                style={{ margin: '3px' }}
+                onChange={({ target: { value } }) => setCurrency(value)}>
+                {currencies
+                  .map(currency => <option value={currency}>{currency}</option>)}
+              </select>
+              <input
+                type="number"
+                min="1"
+                max="100000"
+                placeholder="Enter currency"
+                style={{ margin: '3px' }}
+                onChange={({ target: { value } }) => setValue(value)} />
+              <input
+                placeholder="Auth token"
+                style={{ margin: '3px' }}
+                onChange={({ target: { value } }) => setToken(value)} />
+            </form>
+            <button
+              onClick={createIntent}
+            >Start Payment</button>
+            {!isPaymentIntentReceived && isRetrievingIntent
+              && <div style={{ fontSize: '3rem', color: 'black' }}>... Retrieving</div>}
+            {isPaymentIntentReceived
+              && <div style={{ padding: '1rem', margin: '1px' }}>In process</div>}
+            {clientSecret && (console.log(options, stripePromise) || true) && (
+              <Elements options={options} stripe={stripePromise}>
+                <CheckoutForm
+                  currency={currency}
+                  captureMethod={captureMethod}
+                  clientSecret={clientSecret}
+                />
+              </Elements>
+            )}
+          </div>
+        </div>
+        : <h1>Loading ...</h1>
   );
 }

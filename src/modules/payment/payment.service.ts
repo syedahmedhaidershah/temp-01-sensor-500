@@ -8,6 +8,7 @@ import Stripe from 'stripe';
 import { Document } from 'mongoose';
 import { StripeCustomerType } from './thirdparty/stripe/types/stripe-customer-schema.type';
 import { UserType } from '../users/types';
+import { ConfirmPaymentQuery } from './thirdparty/stripe/types/confirm-payment-query.type';
 
 
 @Injectable()
@@ -79,8 +80,6 @@ export class PaymentService {
     return await this.payments.getPaymentMethodsList({ customerId });
   }
 
-
-
   async createPayment(
     userData: UserType,
     createPaymentPayload: CreatePaymentDto,
@@ -101,5 +100,13 @@ export class PaymentService {
     });
 
     return newPaymentIntent;
+  }
+
+  async autoConfirmedPaymentResponse(
+    createPaymentQueryParams: ConfirmPaymentQuery
+  ): Promise<void> {
+    /**
+     * @note auto-succeed backend side flows are not planned yet, better yet we'd be using webhooks for this
+     */
   }
 }

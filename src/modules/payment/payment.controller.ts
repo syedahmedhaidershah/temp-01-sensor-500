@@ -1,4 +1,8 @@
-import { Controller, Post, Body, Patch, Get, HttpCode, Query } from '@nestjs/common';
+import {
+  Controller, Post, Body, Patch, Get, HttpCode, Query,
+  Response as Res,
+  Request as Req
+} from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Authorization, GetCurrentUser, Public } from 'src/common/decorators';
 import { HttpStatus, Role } from 'src/common/enums';
@@ -9,6 +13,14 @@ import { Document } from 'mongoose';
 import { StripeCustomerType } from './thirdparty/stripe/types/stripe-customer-schema.type';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UserType } from '../users/types';
+import { ConfirmPaymentQuery } from './thirdparty/stripe/types/confirm-payment-query.type';
+import { Request, Response, } from 'express';
+import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
+
+
+const {
+  STRIPE_AUTOCONFRIMATION_REDIRECT,
+} = process.env as EnvironmentVariables;
 
 @Controller('payment')
 export class PaymentController {
@@ -61,11 +73,20 @@ export class PaymentController {
   }
 
   @Public()
-  @Get('confirm')
+  @Get('confirmed-automatic')
   @HttpCode(HttpStatus.OK)
   async confirmPayment(
-    @Query() createPaymentQueryParams: any,
+    @Query() createPaymentQueryParams: ConfirmPaymentQuery,
+    @Req() request: Request,
+    @Res() response: Response,
   ): Promise<any> {
-    return { createPaymentQueryParams }
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const processed = this.paymentService.autoConfirmedPaymentResponse(createPaymentQueryParams);
+
+    const { protocol } = request;
+
+    const baseUrl = STRIPE_AUTOCONFRIMATION_REDIRECT || protocol + '://' + request.headers.referer;
+
+    response.redirect(baseUrl.concat('?payment=succeeded'));
   }
 }
