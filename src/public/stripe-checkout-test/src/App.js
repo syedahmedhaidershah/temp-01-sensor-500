@@ -66,7 +66,7 @@ export default function App() {
 
     // Create PaymentIntent as soon as the page loads
     try {
-      const paymentIntent = fetch(REACT_APP_API_BASE + ':3000/api/v1/payment/', {
+      const paymentIntent = fetch(REACT_APP_API_BASE + '/payment/', {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ export default function App() {
         ),
       });
 
-      // const paymentMethods = fetch(REACT_APP_API_BASE + ':3000/api/v1/payment/methods', {
+      // const paymentMethods = fetch(REACT_APP_API_BASE + '/payment/methods', {
       //   method: "GET",
       //   headers: {
       //     'Content-Type': 'application/json',

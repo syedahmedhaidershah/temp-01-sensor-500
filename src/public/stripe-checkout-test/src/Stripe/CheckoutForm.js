@@ -13,8 +13,8 @@ const {
 
 
 const captureMethodConfirmationsURIs = {
-    manual: REACT_APP_API_BASE + ':3000/api/v1/payment/confirm',
-    automatic: REACT_APP_API_BASE + ':3000/api/v1/payment/confirmed-automatic'
+    manual: REACT_APP_API_BASE + '/payment/confirm',
+    automatic: REACT_APP_API_BASE + '/payment/confirmed-automatic'
 }
 
 export default function CheckoutForm(props) {
