@@ -11,7 +11,10 @@ export class StripeCheckoutService extends StripeService {
     async createPaymentLink(
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         data: CreatePaymentIntentData,
-    ) {
+    ): Promise<boolean> {
+        /**
+         * @todo Look into Links if required, is a bit costlier but more simple
+         */
         return false;
     }
 }

@@ -1,5 +1,4 @@
 import { UserType } from "src/modules/users/types";
-import { ConfirmationMethod, CurrencyCode, PaymentMethodTypes } from "src/modules/payment/enums";
 import { CreatePaymentDto } from "src/modules/payment/dto/create-payment.dto";
 
 /** 
