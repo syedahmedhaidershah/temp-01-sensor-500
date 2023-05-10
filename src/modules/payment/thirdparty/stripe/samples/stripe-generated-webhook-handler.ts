@@ -16,7 +16,7 @@
 
 import stripe from 'stripe';
 
-import * as express from 'express';
+import express from 'express';
 
 import * as dotenv from 'dotenv';
 
@@ -49,11 +49,11 @@ const endpointSecret = STRIPE_ENDPOINT_SECRET_LOCAL;
 
 
 const eventProcessorFunctions = {
-    default: (...args) => { console.log(args) }
+    default: (...args): void => { console.log(args) }
 }
 
 
-export const stripeGeneratedWebhookHandler = (data, options: any = {}) => {
+export const stripeGeneratedWebhookHandler = (data, options: any = {}): unknown => {
     const { 'stripe-signature': signature } = options;
 
     let event;

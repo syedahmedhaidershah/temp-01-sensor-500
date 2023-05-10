@@ -2,7 +2,7 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 
 /** Third party dependencies */
-import * as morgan from 'morgan';
+import morgan from 'morgan';
 
 @Injectable()
 export class MorganLoggerMiddleware implements NestMiddleware {

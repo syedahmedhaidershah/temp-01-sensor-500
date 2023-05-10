@@ -8,7 +8,7 @@ import Stripe from 'stripe';
 import { Document } from 'mongoose';
 import { StripeCustomerType } from './thirdparty/stripe/types/stripe-customer-schema.type';
 import { UserType } from '../users/types';
-import { ConfirmPaymentQuery } from './thirdparty/stripe/types/confirm-payment-query.type';
+import { ConfirmPaymentQueryDto } from './dto/confirm-payment-query.dto';
 
 
 @Injectable()
@@ -103,10 +103,11 @@ export class PaymentService {
   }
 
   async autoConfirmedPaymentResponse(
-    createPaymentQueryParams: ConfirmPaymentQuery
-  ): Promise<void> {
+    createPaymentQueryParams: ConfirmPaymentQueryDto
+  ): Promise<ConfirmPaymentQueryDto> {
     /**
      * @note auto-succeed backend side flows are not planned yet, better yet we'd be using webhooks for this
      */
+    return createPaymentQueryParams;
   }
 }

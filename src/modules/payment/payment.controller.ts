@@ -8,20 +8,22 @@ import { Authorization, GetCurrentUser, Public } from 'src/common/decorators';
 import { HttpStatus, Role } from 'src/common/enums';
 import { CreateCustomerUserData } from './thirdparty/stripe/types';
 import { RegisterPaymentMethodDto } from './dto/register-payment-method.dto';
+import { ConfirmPaymentQueryDto } from './dto/confirm-payment-query.dto';
 import Stripe from 'stripe';
 import { Document } from 'mongoose';
 import { StripeCustomerType } from './thirdparty/stripe/types/stripe-customer-schema.type';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UserType } from '../users/types';
-import { ConfirmPaymentQuery } from './thirdparty/stripe/types/confirm-payment-query.type';
 import { Request, Response, } from 'express';
 import EnvironmentVariables from 'src/common/interfaces/environmentVariables';
+import { ApiTags } from '@nestjs/swagger';
 
 
 const {
   STRIPE_AUTOCONFRIMATION_REDIRECT,
 } = process.env as EnvironmentVariables;
 
+@ApiTags('Payment - Stripe')
 @Controller('payment')
 export class PaymentController {
   constructor(
@@ -76,7 +78,7 @@ export class PaymentController {
   @Get('confirmed-automatic')
   @HttpCode(HttpStatus.OK)
   async confirmPayment(
-    @Query() createPaymentQueryParams: ConfirmPaymentQuery,
+    @Query() createPaymentQueryParams: ConfirmPaymentQueryDto,
     @Req() request: Request,
     @Res() response: Response,
   ): Promise<any> {

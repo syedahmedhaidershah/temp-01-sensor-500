@@ -1,8 +1,8 @@
 import { IsEnum, IsString } from "class-validator";
-import { PaymentStatuses } from "../../enums"
+import { PaymentStatuses } from "../thirdparty/enums"
 
 
-class ConfirmPaymentQueryClass {
+export class ConfirmPaymentQueryDto {
     @IsString()
     payment_intent: string;
 
@@ -13,5 +13,3 @@ class ConfirmPaymentQueryClass {
     @IsString()
     redirect_status: PaymentStatuses
 }
-
-export type ConfirmPaymentQuery = ConfirmPaymentQueryClass;
