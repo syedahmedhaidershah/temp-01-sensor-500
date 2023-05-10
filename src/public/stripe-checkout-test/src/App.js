@@ -12,8 +12,6 @@ const {
   REACT_APP_API_BASE,
 } = process.env;
 
-console.log(process.env);
-
 // Make sure to call loadStripe outside of a component’s render to avoid
 // recreating the Stripe object on every render.
 // This is a public sample test API key.
