@@ -35,9 +35,10 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-.env*
-.env
-!.env.example
+/.env*
+/.env
+!/.env.example
+!/src/public/stripe-checkout-test/.env
 
 # Temp volumes
 data

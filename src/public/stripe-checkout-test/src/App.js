@@ -9,6 +9,7 @@ import { currencies } from './imports';
 
 const {
   REACT_APP_STRIPE_PUBLIC_KEY,
+  REACT_API_BASE,
 } = process.env;
 
 // Make sure to call loadStripe outside of a component’s render to avoid
@@ -65,7 +66,7 @@ export default function App() {
 
     // Create PaymentIntent as soon as the page loads
     try {
-      const paymentIntent = fetch("http://localhost:3000/api/v1/payment/", {
+      const paymentIntent = fetch(REACT_API_BASE + ':3000/api/v1/payment/', {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -82,7 +83,7 @@ export default function App() {
         ),
       });
 
-      // const paymentMethods = fetch("http://localhost:3000/api/v1/payment/methods", {
+      // const paymentMethods = fetch(REACT_API_BASE + ':3000/api/v1/payment/methods', {
       //   method: "GET",
       //   headers: {
       //     'Content-Type': 'application/json',

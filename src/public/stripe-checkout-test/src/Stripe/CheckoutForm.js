@@ -7,9 +7,14 @@ import {
 } from "@stripe/react-stripe-js";
 
 
+const {
+    REACT_API_BASE,
+} = process.env;
+
+
 const captureMethodConfirmationsURIs = {
-    manual: 'http://localhost:3000/api/v1/payment/confirm',
-    automatic: 'http://localhost:3000/api/v1/payment/confirmed-automatic'
+    manual: REACT_API_BASE + ':3000/api/v1/payment/confirm',
+    automatic: REACT_API_BASE + ':3000/api/v1/payment/confirmed-automatic'
 }
 
 export default function CheckoutForm(props) {
