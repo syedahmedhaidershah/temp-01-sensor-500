@@ -17,9 +17,12 @@ import { RouteInfo } from '@nestjs/common/interfaces';
 import { JwtAuthGuardProvider } from './modules/auth/guards';
 import { ResponseInterceptorProvider } from './common/interceptors';
 import { RedisCacheModule } from './modules/cache/cache.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 /** Local constants and statics */
 import EnvironmentVariables from './common/interfaces/environmentVariables';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 /** Local configuration and declarations */
 /** Setting up environment from env files if it exists, and environment isn't loaded */
@@ -30,23 +33,46 @@ const { NODE_ENV, MONGO_URL } = process.env as EnvironmentVariables;
 
 const toExclueRouteInfosFromcheckExpiredToken: RouteInfo[] = [
   { path: 'auth/(.*)', method: RequestMethod.ALL },
+  { path: 'payment/confirmed-automatic', method: RequestMethod.GET },
   { path: 'health-check', method: RequestMethod.GET },
 ];
 
 @Module({
   imports: [
     AuthModule,
-    MongooseModule.forRoot(MONGO_URL),
+    MongooseModule
+      .forRoot(
+        MONGO_URL,
+        {
+          minPoolSize: 1,
+          maxPoolSize: 200,
+          autoIndex: true, //make this also true
+        }
+      ),
     ModelsModule,
     ChairModule,
     RedisCacheModule,
+    PaymentModule,
+    ServeStaticModule
+      .forRoot({
+        rootPath: join(
+          __dirname,
+          '..',
+          'public/stripe-checkout-test/build',
+        ),
+        exclude: ['/api/(.*)'],
+      })
   ],
   controllers: [AppController],
-  providers: [AppService, JwtAuthGuardProvider, ResponseInterceptorProvider],
+  providers: [
+    AppService,
+    JwtAuthGuardProvider,
+    ResponseInterceptorProvider
+  ],
 })
 export class AppModule implements NestModule {
   /** Configuring middlewares */
-  configure(consumer: MiddlewareConsumer) {
+  configure(consumer: MiddlewareConsumer): void {
     /** Enabling logger for local development */
     if (NODE_ENV === 'devlocal') {
       consumer.apply(MorganLoggerMiddleware).forRoutes('/');

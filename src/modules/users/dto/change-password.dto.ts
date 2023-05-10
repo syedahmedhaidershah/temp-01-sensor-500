@@ -1,12 +1,8 @@
 import {
-  IsArray,
-  IsBoolean,
   IsEmail,
   IsNotEmpty,
-  IsOptional,
   IsString,
   MinLength,
-  ValidateIf,
 } from 'class-validator';
 
 export class ChangePasswordDto {

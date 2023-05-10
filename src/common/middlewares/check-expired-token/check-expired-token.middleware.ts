@@ -12,9 +12,13 @@ export class CheckExpiredToken implements NestMiddleware {
   constructor(
     @InjectModel(ExpiredToken.name)
     private readonly expiredTokenModel: Model<ExpiredTokenDocument>,
-  ) {}
+  ) { }
 
-  async use(req: Request, res: Response, next: NextFunction) {
+  async use(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
       throw new ForbiddenException('Invalid or expired token');

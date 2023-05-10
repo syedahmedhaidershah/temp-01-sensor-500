@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   ForbiddenException,
   GoneException,
   Injectable,
@@ -33,7 +34,12 @@ import { UserSafeType } from '../users/types/users-safe.type';
 
 dotenv.config();
 
-const { JWT_SECRET_ACCESS_TOKEN_KEY, JWT_SECRET_REFRESH_TOKEN_KEY, OTP_LENGTH } =
+const {
+  JWT_SECRET_ACCESS_TOKEN_KEY,
+  JWT_SECRET_REFRESH_TOKEN_KEY,
+  OTP_LENGTH,
+  JWT_DEFAULT_EXPIRY_TIME,
+} =
   process.env as EnvironmentVariables;
 
 @Injectable()
@@ -48,7 +54,7 @@ export class AuthService {
     private readonly cacheService: CacheService,
     @InjectModel(ExpiredToken.name)
     private readonly expiredTokenModel: Model<ExpiredTokenDocument>,
-  ) {}
+  ) { }
 
   async userLogin(userDto: LoginDto): Promise<SafeUserTokenType> {
     const user = await this.validateUser(userDto.username, userDto.password);
@@ -56,6 +62,7 @@ export class AuthService {
 
     const tokens = await this.getTokensAndUpdateRtHash(user, Constants.USER);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...responseUser } = user;
 
     return {
@@ -70,6 +77,7 @@ export class AuthService {
 
     const tokens = await this.getTokensAndUpdateRtHash(user, Constants.ADMIN);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...responseUser } = user;
 
     return {
@@ -85,6 +93,7 @@ export class AuthService {
       const createdUser = await this.usersService.createUser(userDto);
       const tokens = await this.getTokensAndUpdateRtHash(createdUser, Constants.USER);
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...responseUser } = createdUser;
 
       return {
@@ -95,7 +104,7 @@ export class AuthService {
 
     /** If user is not guest check if user exist, if exist throw error else create new user */
     const user = await this.usersService.findUserByUsername(userDto.username);
-    if (user) throw new ForbiddenException(Constants.ErrorMessages.USER_USERNAME_ALREADY_EXIST);
+    if (user) throw new ConflictException(Constants.ErrorMessages.USER_USERNAME_ALREADY_EXIST);
 
     const hashedPassword = await hashData(userDto.password);
     userDto.password = hashedPassword;
@@ -105,6 +114,7 @@ export class AuthService {
 
     const tokens = await this.getTokensAndUpdateRtHash(createdUser, Constants.USER);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...responseUser } = createdUser;
 
     return {
@@ -120,7 +130,7 @@ export class AuthService {
 
     const admin = await this.usersService.findAdminUserByUsername(adminDto.username);
 
-    if (admin) throw new ForbiddenException(Constants.ErrorMessages.ADMIN_USERNAME_ALREADY_EXIST);
+    if (admin) throw new ConflictException(Constants.ErrorMessages.ADMIN_USERNAME_ALREADY_EXIST);
 
     const hashedPassword = await hashData(adminDto.password);
     adminDto.password = hashedPassword;
@@ -130,7 +140,9 @@ export class AuthService {
 
     await this.generateOtp({ email: createdUser.email, subject: Constants.EMAIL_SUBJECT });
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...responseUser } = createdUser;
+
     return {
       user: responseUser,
       tokens,
@@ -311,7 +323,7 @@ export class AuthService {
           _id,
           roles,
         },
-        { secret: JWT_SECRET_ACCESS_TOKEN_KEY, expiresIn: 60 * 15 },
+        { secret: JWT_SECRET_ACCESS_TOKEN_KEY, expiresIn: +JWT_DEFAULT_EXPIRY_TIME * 60 },
       ),
       this.jwtService.signAsync(
         {
@@ -321,7 +333,7 @@ export class AuthService {
         },
         {
           secret: JWT_SECRET_REFRESH_TOKEN_KEY,
-          expiresIn: 60 * 60 * 24 * 7,
+          expiresIn: +JWT_DEFAULT_EXPIRY_TIME * 60 * 60 * 24 * 7,
         },
       ),
     ]);

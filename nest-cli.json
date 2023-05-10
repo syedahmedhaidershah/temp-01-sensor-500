@@ -11,6 +11,14 @@
           "classValidatorShim": true
         }
       }
-    ]
+    ],
+    "assets": [
+      {
+        "include": "./public/stripe-checkout-test/build",
+        "outDir": "dist",
+        "watchAssets": true
+      }
+    ],
+    "watchAssets": true
   }
 }

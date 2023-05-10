@@ -45,3 +45,9 @@ scripts/local
 package-lock.json
 dockerfiles
 conf\dockerContainers
+
+
+
+# Sandbox
+/sandbox/garbage
+sandbox/garbage

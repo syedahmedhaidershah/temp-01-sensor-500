@@ -13,7 +13,20 @@ import helmet from 'helmet';
 import { AllExceptionsFilter } from 'src/common/filters';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
-async function bootstrap() {
+import { swaggerConfig } from './config'
+
+const {
+  SWAGGER_API_VERSION,
+  SWAGGER_DESCRIPTION,
+  SWAGGER_TITLE,
+  SWAGGER_BEARER_AUTH_IN,
+  SWAGGER_BEARER_AUTH_NAME,
+} = swaggerConfig;
+
+async function bootstrap(): Promise<
+  import('http').Server
+  | import('https').Server
+> {
   dotenv.config();
   /** Setting up environment from env files if it exists */
 
@@ -23,11 +36,6 @@ async function bootstrap() {
     PORT,
     API_BASE,
     ENABLE_ALL_ORIGINS = 'true',
-    SWAGGER_API_VERSION,
-    SWAGGER_DESCRIPTION,
-    SWAGGER_TITLE,
-    SWAGGER_BEARER_AUTH_IN,
-    SWAGGER_BEARER_AUTH_NAME,
   } = process.env as EnvironmentVariables;
   const ENABLE_ALL_ORIGINS_BOOL = JSON.parse(ENABLE_ALL_ORIGINS as string);
 
@@ -64,7 +72,23 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(swaggerPath, app, document);
 
-  app.use(helmet());
+  app.use(
+    helmet({
+      crossOriginEmbedderPolicy: false,
+      contentSecurityPolicy: {
+        directives: {
+          imgSrc: [`'self'`, 'data:', 'apollo-server-landing-page.cdn.apollographql.com'],
+          scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
+          manifestSrc: [`'self'`, 'apollo-server-landing-page.cdn.apollographql.com'],
+          frameSrc: [
+            `'self'`,
+            'sandbox.embed.apollographql.com',
+            'https://js.stripe.com/',
+          ],
+        },
+      },
+    })
+  );
 
   return await app.listen(PORT);
 }

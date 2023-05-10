@@ -16,6 +16,7 @@ export default interface EnvironmentVariables {
   readonly BCRYPT_SALT_ROUND?: number;
   readonly JWT_SECRET_ACCESS_TOKEN_KEY?: string;
   readonly JWT_SECRET_REFRESH_TOKEN_KEY?: string;
+  readonly JWT_DEFAULT_EXPIRY_TIME?: number;
   readonly SENDGRID_SENDER_EMAIL?: string;
   readonly SENDGRID_API_KEY?: string;
   readonly SENDGRID_TEMPLATE_ID?: string;
@@ -28,9 +29,9 @@ export default interface EnvironmentVariables {
   readonly MQTT_USERNAME?: string;
   readonly MQTT_PASSWORD?: string;
   readonly API_BASE?: string;
-  readonly SWAGGER_TITLE?: string;
-  readonly SWAGGER_DESCRIPTION?: string;
-  readonly SWAGGER_API_VERSION?: string;
-  readonly SWAGGER_BEARER_AUTH_IN?: string;
-  readonly SWAGGER_BEARER_AUTH_NAME?: string;
+  readonly STRIPE_PUBLISHABLE_KEY?: string;
+  readonly STRIPE_SECRET_KEY?: string;
+  // Endpoint secret for webhook for local
+  readonly STRIPE_ENDPOINT_SECRET_LOCAL?: string;
+  readonly STRIPE_AUTOCONFRIMATION_REDIRECT?: string;
 }

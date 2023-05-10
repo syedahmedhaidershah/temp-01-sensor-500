@@ -22,7 +22,10 @@ export class RefreshTokenStrategy extends PassportStrategy(
       passReqToCallback: true,
     });
   }
-  async validate(req: Request, payload: JwtPayloadType) {
+  async validate(
+    req: Request,
+    payload: JwtPayloadType
+  ): Promise<JwtPayloadType & { refreshToken: string | string[] }> {
     const refreshToken = req.headers['x-refresh-token'];
     return { ...payload, refreshToken };
   }

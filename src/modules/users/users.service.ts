@@ -16,9 +16,11 @@ export class UsersService {
     @InjectModel(User.name) private readonly userModel: Model<UserType>,
     @InjectModel(AdminUser.name)
     private readonly adminUserModel: Model<UserType>,
-  ) {}
+  ) { }
 
-  async changeUserPassword(changedPasswordDto: ChangePasswordType) {
+  async changeUserPassword(
+    changedPasswordDto: ChangePasswordType
+  ): Promise<boolean> {
     const hashedPassword = await hashData(changedPasswordDto.password);
     await this.findUserByEmailAndUpdate(changedPasswordDto.email, {
       password: hashedPassword,
@@ -26,7 +28,9 @@ export class UsersService {
     return true;
   }
 
-  async changeAdminPassword(changedPasswordDto: ChangePasswordType) {
+  async changeAdminPassword(
+    changedPasswordDto: ChangePasswordType
+  ): Promise<boolean> {
     const hashedPassword = await hashData(changedPasswordDto.password);
     await this.findAdminByEmailAndUpdate(changedPasswordDto.email, {
       password: hashedPassword,
@@ -34,7 +38,10 @@ export class UsersService {
     return true;
   }
 
-  async createUser(userDto: UserType, options: any = {}): Promise<UserType> {
+  async createUser(
+    userDto: UserType,
+    options: any = {}
+  ): Promise<UserType> {
     const { lean = true } = options;
     const user = new this.userModel(userDto);
     const createdUser = await user.save();
@@ -45,7 +52,10 @@ export class UsersService {
     return createdUser?.toObject();
   }
 
-  async createAdminUser(userDto: UserType, options: any = {}): Promise<UserType> {
+  async createAdminUser(
+    userDto: UserType,
+    options: any = {}
+  ): Promise<UserType> {
     const { lean = true } = options;
 
     const admin = new this.adminUserModel(userDto);
@@ -58,13 +68,19 @@ export class UsersService {
     return createdAdmin?.toObject();
   }
 
-  async findUserByEmailAndUpdate(email: string, data: Partial<UserType>): Promise<UserSafeType> {
+  async findUserByEmailAndUpdate(
+    email: string,
+    data: Partial<UserType>
+  ): Promise<UserSafeType> {
     return await this.userModel
       .findOneAndUpdate({ email }, { $set: { ...data } }, { new: true })
       .select('-password');
   }
 
-  async findAdminByEmailAndUpdate(email: string, data: Partial<UserType>): Promise<UserSafeType> {
+  async findAdminByEmailAndUpdate(
+    email: string,
+    data: Partial<UserType>
+  ): Promise<UserSafeType> {
     return await this.adminUserModel
       .findOneAndUpdate({ email }, { $set: { ...data } }, { new: true })
       .select('-password');
@@ -77,26 +93,37 @@ export class UsersService {
     return this.userModel.findByIdAndUpdate(userId, data, { new: true }).exec();
   }
 
-  async updateAdminUser(userId: string, data: Partial<UserType> | UserType): Promise<UserType> {
+  async updateAdminUser(
+    userId: string,
+    data: Partial<UserType> | UserType
+  ): Promise<UserType> {
     return this.adminUserModel.findByIdAndUpdate(userId, data, { new: true }).exec();
   }
 
-  async findUserById(userID: string): Promise<UserType | undefined> {
+  async findUserById(
+    userID: string
+  ): Promise<UserType | null> {
     const user = await this.userModel.findById({ _id: userID }).exec();
     return user;
   }
 
-  async findAdminUserById(userID: string): Promise<UserType | undefined> {
+  async findAdminUserById(
+    userID: string
+  ): Promise<UserType | undefined> {
     const user = await this.adminUserModel.findById({ _id: userID }).exec();
     return user;
   }
 
-  async findUserByUsername(username: string): Promise<UserType | undefined> {
+  async findUserByUsername(
+    username: string
+  ): Promise<UserType | undefined> {
     const user = await this.userModel.findOne({ username }, { hashed_refreshtoken: 0 }).exec();
     return user?.toObject();
   }
 
-  async findAdminUserByUsername(username: string): Promise<UserType | undefined> {
+  async findAdminUserByUsername(
+    username: string
+  ): Promise<UserType | undefined> {
     const user = await this.adminUserModel.findOne({ username }, { hashed_refreshtoken: 0 }).exec();
     return user?.toObject();
   }

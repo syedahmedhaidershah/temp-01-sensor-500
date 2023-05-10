@@ -18,10 +18,19 @@
             ],
             "sourceMaps": true,
             "cwd": "${workspaceRoot}",
-        }
+        },
+        {
+            "name": "Attach-STRIPE-SAMPLE",
+            "port": 9229,
+            "request": "attach",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node"
+        },
         {
             "name": "Attach",
-            "port": 9229,
+            "port": 9228,
             "request": "attach",
             "skipFiles": [
                 "<node_internals>/**"

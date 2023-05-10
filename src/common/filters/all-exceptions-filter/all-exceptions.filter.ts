@@ -3,23 +3,51 @@ import {
   Catch,
   ArgumentsHost,
   HttpStatus,
-  InternalServerErrorException,
 } from '@nestjs/common';
 
 import { MongoErrors } from 'src/common/enums';
+import { CustomExceptionType, CustomExceptionReturnType, CustomMongooseErrorType } from '../exception-types';
 
 /**
  * Using dry-kiss for switching between handlers
  */
 const codeKeyMaps = {
-  '11000': {
-    key: 'DuplicateKey',
-    statusCode: HttpStatus.CONFLICT,
-  },
+  Mongo: {
+    '11000': {
+      key: 'DuplicateKey',
+      statusCode: HttpStatus.CONFLICT,
+    },
+  }
 };
 
 const handlerMethods = {
-  MongoServerError: function (exception) {
+  StripeInvalidRequestError: function (
+    exception
+  ): CustomExceptionReturnType {
+    const {
+      statusCode = HttpStatus.INTERNAL_SERVER_ERROR,
+      message,
+      type: data = 'Error',
+    } = exception as {
+      statusCode: number;
+      type: string;
+      message: string;
+    };
+
+    const toReturn = {
+      data,
+      message,
+      /**
+       * @note  Default status is either the exception retrieved status code, otherwise INTERNAL_SERVER_ERROR if not present
+       */
+      statusCode,
+    };
+
+    return toReturn;
+  },
+  MongoServerError: function (
+    exception: CustomMongooseErrorType,
+  ): CustomExceptionReturnType {
     const { code, keyPattern, message } = exception as {
       code: number;
       keyPattern: string;
@@ -35,7 +63,7 @@ const handlerMethods = {
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
     };
 
-    const errorObject = codeKeyMaps[code.toString()];
+    const errorObject = codeKeyMaps.Mongo[code.toString()];
 
     if (!errorObject) return toReturn;
 
@@ -49,30 +77,49 @@ const handlerMethods = {
 
     return toReturn;
   },
-  default: function (exception) {
-    const { message } = exception as { message: string };
+  default: function (
+    exception
+  ): CustomExceptionReturnType {
+    const {
+      message,
+      response: {
+        message: responseMessage
+      } = {}
+    } = exception as {
+      message: string,
+      response?: {
+        statusCode: number,
+        message: Array<string>,
+        error: string,
+      }
+    };
 
     return {
       data: 'Error',
-      message,
+      message: (responseMessage || message) as string,
       /**
        * @note  Default status is either the exception retrieved status code, otherwise INTERNAL_SERVER_ERROR if not present
        */
-      statusCode: exception?.getStatus() || HttpStatus.INTERNAL_SERVER_ERROR,
+      statusCode: exception.status || exception?.getStatus() || HttpStatus.INTERNAL_SERVER_ERROR,
     };
   },
 };
 
+
+
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  catch(exception: InternalServerErrorException, host: ArgumentsHost) {
+  catch(exception: CustomExceptionType, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
 
     console.log(exception);
 
-    const useResponse = handlerMethods[exception.name]
-      ? handlerMethods[exception.name](exception)
+    const useException = handlerMethods[exception.name] || handlerMethods[exception.type]
+
+    const useResponse = useException
+      ? useException(exception)
       : handlerMethods.default(exception);
 
     const { statusCode = HttpStatus.INTERNAL_SERVER_ERROR } = useResponse;

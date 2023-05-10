@@ -34,7 +34,7 @@ export class CacheService {
 
 
   /** Flushes / resets the cache */
-  async flush() {
+  async flush(): Promise<void> {
     await this.cacheManager.reset();
   }
 }

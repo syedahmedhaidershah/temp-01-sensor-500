@@ -1,5 +1,5 @@
 /** Third part dependencies */
-import { Column, Model, Table } from 'sequelize-typescript';
+import { Model, Table } from 'sequelize-typescript';
 
 /** Local dependencies */
 import { UserType } from '../../../modules/users/types';
@@ -22,6 +22,8 @@ export class User extends Model {
 
   // password if set up
   password?: string;
+
+  phone_number?: string;
 
   instance: UserType | undefined;
 
