@@ -5,6 +5,7 @@ export const ErrorMessagesConstants = {
   INVALID_EMAIL: 'Invalid email address',
   OTP_EXPIRED: 'OTP Expired',
   INCORRECT_OTP: 'Incorrect OTP provided. Please input correct OTP.',
+  INVALID_USERNAME_PASSWORD: 'Invalid username or password',
   NO_USER_FOUND: 'No user found.',
   CHAIR_UPDATE_DENIED: 'This action can`t be performed for this chair state',
   EMAIL_NOT_FOUND: 'Email not found',

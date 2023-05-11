@@ -288,7 +288,7 @@ export class AuthService {
 
   async validateUser(username: string, pass: string): Promise<UserType | null> {
     const user = await this.usersService.findUserByUsername(username);
-    if (!user) throw new NotFoundException(Constants.ErrorMessages.NO_USER_FOUND);
+    if (!user) throw new NotFoundException(Constants.ErrorMessages.INVALID_USERNAME_PASSWORD);
     const passwordMatches = await compareHashed(pass, user.password);
 
     if (!passwordMatches) {
@@ -303,7 +303,7 @@ export class AuthService {
 
   async validateAdmin(username: string, pass: string): Promise<UserType | null> {
     const user = await this.usersService.findAdminUserByUsername(username);
-    if (!user) throw new NotFoundException(Constants.ErrorMessages.NO_USER_FOUND);
+    if (!user) throw new NotFoundException(Constants.ErrorMessages.INVALID_USERNAME_PASSWORD);
     const passwordMatches = await compareHashed(pass, user.password);
 
     if (!passwordMatches) {
