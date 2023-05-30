@@ -5,7 +5,6 @@ import { Document, Model } from 'mongoose';
 import { Sensor } from 'src/database/mongoose/schemas';
 import { CreateSensorDto } from 'src/modules/sensors/dto/create-sensor.dto';
 import { QueueData } from '../types';
-import { Injectable } from '@nestjs/common';
 import { queueConfig } from '../queue.config';
 
 // @Injectable()
