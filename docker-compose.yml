@@ -1,20 +1,22 @@
 version: '3.8'
 services:
-  # api:
-  #   build:
-  #     context: .
-  #     dockerfile: ./dockerfiles/nestjs.dockerfile
-  #   volumes:
-  #     - /app/node_modules
-  #   ports:
-  #     - 3000:3000
-  #     - 9229:9229
-  #   depends_on:
-  #     - mongo_db
-  #     - redis
-  #     - redis-queue
-  #   links:
-  #     - mongo_db
+  api:
+    build:
+      context: .
+      dockerfile: ./dockerfiles/nestjs.dockerfile
+    volumes:
+      - /app/node_modules
+    ports:
+      - 3000:3000
+      - 9229:9229
+    depends_on:
+      - mongo_db
+      - redis_store
+      - redis_queue
+    links:
+      - mongo_db
+      - redis_store
+      - redis_queue
   mongo_db:
     container_name: mongo_db
     image: mongo
@@ -23,13 +25,13 @@ services:
       - "27017:27017"
     volumes:
       - ./data:/data/db
-  redis-storage:
+  redis_store:
     image: redis
     container_name: redis
     ports:
       - "6379:6379"
-  redis-queue:
+  redis_queue:
     image: redis
-    container_name: redis-queue
+    container_name: redis_queue
     ports:
       - "6378:6379"
