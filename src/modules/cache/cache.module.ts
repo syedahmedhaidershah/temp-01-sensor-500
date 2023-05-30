@@ -19,7 +19,7 @@ const CACHE_ISGLOBAL_BOOL = JSON.parse(CACHE_ISGLOBAL as string);
       store: redisStore,
       host: CACHE_HOST,
       port: +CACHE_PORT,
-      isGlobal: CACHE_ISGLOBAL_BOOL,
+      isGlobal: CACHE_ISGLOBAL_BOOL
     }),
   ],
   providers: [CacheService],

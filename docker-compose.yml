@@ -12,27 +12,24 @@ services:
   #   depends_on:
   #     - mongo_db
   #     - redis
-  #     - mqttserver
+  #     - redis-queue
   #   links:
   #     - mongo_db
   mongo_db:
     container_name: mongo_db
     image: mongo
     restart: always
+    ports:
+      - "27017:27017"
     volumes:
       - ./data:/data/db
-  mqttserver:
-    image: eclipse-mosquitto
-    ports:
-      - 1883:1883
-      - 9001:9001
-    volumes:
-      - ./conf/dockerContainers/mosquitto:/mosquitto/config
-      - /mosquitto/config
-      - /mosquitto/data
-      - /mosquitto/log
-  redis:
+  redis-storage:
     image: redis
     container_name: redis
     ports:
       - "6379:6379"
+  redis-queue:
+    image: redis
+    container_name: redis-queue
+    ports:
+      - "6378:6379"

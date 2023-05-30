@@ -1,1 +1,1 @@
-export * as Sequelize from './sequelize';
+export * from './mongoose';

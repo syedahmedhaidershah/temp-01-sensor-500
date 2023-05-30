@@ -1,14 +1,28 @@
-import { CurrencyCode } from "src/modules/payment/enums";
+interface IBusinessParameters {
+    sensors: {
+        machineCount: number;
+        maxRequestsPerSecond: number;
+        /**
+         * This is defined in seconds
+         */
+        acceptableRequestTimeRange: number;
+    };
 
-export const businessParameters = {
-    payments: {
-        defaultCurrency: CurrencyCode.EUR,
-        caps: {
-            customer: {
-                /** Amount is in cents */
-                minimumAccepted: 50,
-                maximumAccepted: 100000,
-            }
-        }
+    systemResponsiveness: {
+        concurrency: number;
+        availability: number;
+    };
+}
+
+export const businessParameters: IBusinessParameters = {
+    sensors: {
+        machineCount: 500,
+        maxRequestsPerSecond: 4,
+        acceptableRequestTimeRange: 1,
+    },
+
+    systemResponsiveness: {
+        concurrency: 2000,
+        availability: 100,
     }
 }

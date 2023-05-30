@@ -1,1 +1,2 @@
-export * from './schema.module';
+export * from './models.module'
+export * from './mongoose.config';

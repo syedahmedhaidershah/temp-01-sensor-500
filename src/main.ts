@@ -42,12 +42,8 @@ async function bootstrap(): Promise<
   /** Configuring runtime and bootstrapping */
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
-    //* User for fastify integration
-    // new FastifyAdapter(),
-    // {
-    //   logger: ['error', 'debug', 'verbose'],
-    // },
   );
+
   app.setGlobalPrefix(API_BASE);
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new AllExceptionsFilter());
@@ -56,6 +52,9 @@ async function bootstrap(): Promise<
     app.enableCors();
   }
 
+  /**
+   * Swagger documentation for apis
+   */
   const swaggerPath = `/api/docs`;
 
   const config = new DocumentBuilder()
@@ -69,7 +68,9 @@ async function bootstrap(): Promise<
     })
     .addSecurityRequirements('bearer')
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
+
   SwaggerModule.setup(swaggerPath, app, document);
 
   app.use(
@@ -82,8 +83,7 @@ async function bootstrap(): Promise<
           manifestSrc: [`'self'`, 'apollo-server-landing-page.cdn.apollographql.com'],
           frameSrc: [
             `'self'`,
-            'sandbox.embed.apollographql.com',
-            'https://js.stripe.com/',
+            '*'
           ],
         },
       },

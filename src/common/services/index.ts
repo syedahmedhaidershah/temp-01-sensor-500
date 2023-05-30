@@ -1,1 +1,2 @@
-export * from './mqtt-client/mqtt-client.service';
+/* eslint-disable @typescript-eslint/no-empty-function */
+export const emptyService = function (): void { }

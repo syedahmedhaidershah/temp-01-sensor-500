@@ -23,9 +23,9 @@ export class CacheService {
   async set(
     key: string,
     value: unknown,
-    ttl = Number(CACHE_TTL),
+    ttl = +CACHE_TTL,
   ): Promise<void> {
-    await this.cacheManager.set(key, value, ttl);
+    await this.cacheManager.set(key, value, { ttl });
   }
 
   async delete(key: string): Promise<void> {
